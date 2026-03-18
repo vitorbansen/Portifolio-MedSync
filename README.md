@@ -194,17 +194,6 @@ Login → Dashboard → Agendamento → Confirmação
 
 ---
 
-##  4.2 Telas Principais
-
-- Tela de Login  
-- Dashboard  
-- Busca de Médicos  
-- Agendamento  
-
-*(Sugestão: adicionar link do Figma aqui)*
-
----
-
 ##  4.3 Fluxo de Interação
 
 1. usuário acessa sistema  
