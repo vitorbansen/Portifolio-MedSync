@@ -20,7 +20,7 @@ O objetivo desta seção é responder uma pergunta fundamental: este projeto res
 
 ---
 
-## 1.1 Contexto e Problema
+## 1.1 Contexto e Problema 
 
 O processo de agendamento de consultas médicas em clínicas de médio porte ainda é, em grande parte, dependente de métodos manuais ou de sistemas isolados e pouco integrados entre si. Essa realidade gera uma série de problemas operacionais que afetam tanto os profissionais de saúde quanto os pacientes. Conflitos de agenda ocorrem com frequência quando múltiplos atendentes tentam coordenar horários sem uma visão unificada da disponibilidade dos médicos. O índice de absenteísmo (no-show) permanece elevado, uma vez que não há mecanismos eficientes de lembrete ou confirmação automatizada.
 
@@ -30,7 +30,7 @@ Do ponto de vista do paciente, a experiência também deixa a desejar. A necessi
 
 ## 1.2 Origem da Demanda e Evidências
 
-A demanda pelo MedSync foi validada por meio de uma pesquisa qualitativa realizada com 10 usuários entre pacientes e profissionais de saúde, além da análise de processos em clínicas de médio porte localizadas na região de Joinville/SC. As entrevistas foram conduzidas de forma semiestruturada em 10 de abril de 2026 e revelaram padrões consistentes de insatisfação com os métodos atuais de agendamento.
+A demanda pelo MedSync foi validada por meio de uma pesquisa qualitativa realizada com 4 participantes — 3 biomédicas de uma clínica de médio porte e 1 analista de TI de software house —, além da análise de processos em clínicas de médio porte localizadas na região de Joinville/SC. As entrevistas foram conduzidas de forma semiestruturada em 10 de abril de 2026 e revelaram padrões consistentes de insatisfação com os métodos atuais de agendamento.
 
 ### Entrevistas Realizadas
 
@@ -116,15 +116,15 @@ Sobre o que consideraria indispensável em uma nova solução voltada para esse 
 
 ### Consolidação dos Dados
 
-A pesquisa envolveu entrevistas semiestruturadas e observação direta dos processos de agendamento nas clínicas analisadas. O número de pessoas entrevistadas totalizou 10 participantes, incluindo biomédicas, profissionais de TI e pacientes. Os principais padrões observados foram a dependência excessiva de planilhas e telefone, a falta de visibilidade unificada sobre a agenda completa e a ausência de qualquer tipo de confirmação automatizada. A tabela a seguir sintetiza as principais dores identificadas durante a pesquisa:
+A pesquisa envolveu 4 entrevistas semiestruturadas com perfis complementares: 3 biomédicas atuando na mesma clínica (Dra. Lívia Andrade, Rebeca Biondi e Julia Viertel) e 1 analista de TI de software house (Vitor Monteiro). Os principais padrões observados foram a dependência excessiva de planilhas e telefone, a falta de visibilidade unificada sobre a agenda e a ausência de qualquer tipo de confirmação automatizada. A tabela a seguir sintetiza as principais dores identificadas:
 
-| Problema Identificado | Frequência entre Entrevistados |
+| Problema Identificado | Entrevistados que relataram |
 |---|---|
-| Falta de organização na agenda | 80% |
-| Pacientes não comparecem às consultas | 70% |
-| Dificuldade no processo de agendamento | 60% |
+| Falta de organização na agenda | Dra. Lívia, Rebeca, Julia |
+| Pacientes não comparecem às consultas | Dra. Lívia, Rebeca |
+| Dificuldade no processo de agendamento | Dra. Lívia, Julia, Vitor |
 
-Esses dados indicam que a falta de organização é o problema mais crítico, afetando 8 em cada 10 entrevistados. O absenteísmo aparece como segundo maior desafio, representando perda financeira direta para as clínicas. A dificuldade de agendamento, relatada por 60% dos participantes, reflete a baixa acessibilidade dos sistemas atuais. As entrevistas com o perfil técnico reforçaram ainda a necessidade de uma solução baseada em nuvem, com API aberta e custo acessível para o segmento de médio porte.
+A falta de organização foi a dor mais unânime, presente nos três perfis clínicos. O absenteísmo representa perda financeira direta e ausência de mecanismo automatizado de lembrete. A dificuldade de agendamento, reforçada também pela perspectiva técnica de Vitor, aponta para a necessidade de uma solução acessível via navegador, baseada em nuvem e com API aberta para integrações futuras.
 
 ---
 
@@ -182,7 +182,7 @@ Esta seção define o que o sistema fará, de forma objetiva e sem descrições 
 
 **João (Paciente):** João representa o paciente típico que enfrenta dificuldades para agendar consultas médicas. Ele trabalha em horário comercial e raramente consegue ligar para a clínica durante o expediente. Quando consegue, frequentemente encontra horários indisponíveis ou precisa aguardar retorno. João busca praticidade e rapidez, desejando um sistema onde possa visualizar a disponibilidade e agendar sua consulta em poucos cliques, a qualquer momento do dia.
 
-**Dra. Ana (Médica):** A Dra. Ana é uma médica que atende em uma clínica de médio porte e precisa de uma visão clara e organizada de sua agenda diária. Ela lida com um volume considerável de consultas e sofre com o alto índice de faltas de pacientes, o que gera prejuízo financeiro e desorganização em seu dia. A Dra. Ana deseja um sistema que reduza o número de no-shows e lhe permita gerenciar seus horários com autonomia e eficiência.
+**Dra. Ana (Biomédica):** A Dra. Ana é uma biomédica que atende em uma clínica de médio porte e precisa de uma visão clara e organizada de sua agenda diária. Ela lida com um volume considerável de procedimentos e sofre com o alto índice de faltas de pacientes e com a falta de autonomia para acompanhar sua própria agenda sem depender da recepção. A Dra. Ana deseja um sistema que reduza o número de no-shows, notifique-a sobre cancelamentos em tempo real e permita gerenciar seus horários com independência e eficiência.
 
 ---
 
@@ -338,7 +338,7 @@ flowchart LR
 
 ## 4.2 Wireframes ou Mockups das Telas
 
-Os mockups das principais telas do MedSync foram desenvolvidos com foco na simplicidade e na acessibilidade. A tela de login apresenta campos de e-mail e senha com opção de cadastro visível. O dashboard exibe um resumo dos próximos agendamentos do usuário de forma clara. A tela de busca de médicos permite filtrar por especialidade com resultados organizados em cards. A tela de agendamento mostra os horários disponíveis em formato de calendário, com confirmação em um único clique. Por fim, a tela de confirmação apresenta todos os dados da consulta agendada. Prints das telas e protótipos navegáveis estão disponíveis nos apêndices deste documento.
+Os mockups das principais telas do MedSync foram desenvolvidos com foco na simplicidade e na acessibilidade. A tela de login apresenta campos de e-mail e senha com opção de cadastro visível. O dashboard exibe um resumo dos próximos agendamentos do usuário de forma clara. A tela de busca de médicos permite filtrar por especialidade com resultados organizados em cards. A tela de agendamento mostra os horários disponíveis em formato de calendário, com confirmação em um único clique. Por fim, a tela de confirmação apresenta todos os dados da consulta agendada. Os wireframes das telas planejadas estão disponíveis nos apêndices deste documento.
 
 ---
 
@@ -348,9 +348,13 @@ O fluxo de interação descreve a jornada completa do usuário dentro da platafo
 
 ---
 
-## 4.4 Feedback Inicial de Usuários (Opcional)
+## 4.4 Feedback Inicial de Usuários
 
-A validação inicial dos mockups foi realizada de forma informal com parte dos 10 participantes da pesquisa original. Os feedbacks indicaram aprovação do fluxo simplificado e da organização visual das telas. As principais sugestões de melhoria incluíram a adição de filtros por localização na busca de médicos e a exibição de tempo estimado de espera, funcionalidades que poderão ser incorporadas em versões futuras da plataforma.
+A validação inicial dos mockups foi realizada em 10/04/2026 com as três biomédicas entrevistadas na clínica (Dra. Lívia Andrade, Rebeca Biondi e Julia Viertel), aproveitando o mesmo encontro da pesquisa de campo.
+
+A Dra. Lívia aprovou a tela de visão unificada da agenda, destacando que era exatamente o que faltava no processo atual com planilhas. Rebeca reagiu positivamente à notificação de cancelamento vinculada ao perfil do profissional, apontando que resolveria diretamente a dor que relatou durante a entrevista. Julia sugeriu que a tela de agendamento deixasse explícita a duração de cada tipo de procedimento antes da confirmação, para que a recepção não pudesse marcar slots insuficientes — sugestão alinhada com a funcionalidade de controle de duração que ela mencionou.
+
+As principais sugestões de melhoria foram a exibição da duração estimada por tipo de procedimento na tela de seleção de horário e um indicador visual de horários bloqueados na agenda do profissional. Ambas poderão ser incorporadas em versões futuras da plataforma.
 
 ---
 
@@ -759,7 +763,7 @@ As seguintes referências técnicas foram utilizadas como base para as decisões
 
 # 9. Apêndices
 
-Os seguintes materiais complementares acompanham este RFC e estão disponíveis no repositório do projeto: diagramas C4 detalhados dos três níveis de abstração (contexto, containers e componentes), diagrama entidade-relacionamento (DER) do modelo de dados, mockups das principais telas da aplicação, protótipos interativos para validação com usuários e prints das telas implementadas. Esses materiais servem como registro visual das decisões de design e podem ser consultados para aprofundamento em qualquer aspecto do projeto.
+Os seguintes materiais complementares acompanham este RFC e estão disponíveis no repositório do projeto: diagramas C4 detalhados dos três níveis de abstração (contexto, containers e componentes), diagrama entidade-relacionamento (DER) do modelo de dados e wireframes das principais telas planejadas da aplicação. Esses materiais servem como registro visual das decisões de design e podem ser consultados para aprofundamento em qualquer aspecto do projeto.
 
 ---
 
