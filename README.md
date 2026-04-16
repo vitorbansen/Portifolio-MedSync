@@ -1,4 +1,4 @@
-# RFC: Request for Comments — Projeto de Portfólio
+# RFC — Projeto de Portfólio
 
 **Engenharia de Software – Católica SC**
 
@@ -30,11 +30,93 @@ Do ponto de vista do paciente, a experiência também deixa a desejar. A necessi
 
 ## 1.2 Origem da Demanda e Evidências
 
-A demanda pelo MedSync foi validada por meio de uma pesquisa qualitativa realizada com 10 usuários entre pacientes e profissionais de saúde, além da análise de processos em 3 clínicas de médio porte localizadas na região de Joinville/SC. As entrevistas revelaram padrões consistentes de insatisfação com os métodos atuais de agendamento.
+A demanda pelo MedSync foi validada por meio de uma pesquisa qualitativa realizada com 10 usuários entre pacientes e profissionais de saúde, além da análise de processos em clínicas de médio porte localizadas na região de Joinville/SC. As entrevistas foram conduzidas de forma semiestruturada em 10 de abril de 2026 e revelaram padrões consistentes de insatisfação com os métodos atuais de agendamento.
 
-### Pesquisa com Usuários
+### Entrevistas Realizadas
 
-A pesquisa envolveu entrevistas semiestruturadas e observação direta dos processos de agendamento nas clínicas analisadas. O número de pessoas entrevistadas totalizou 10 participantes, incluindo recepcionistas, médicos e pacientes. Os principais padrões observados foram a dependência excessiva do telefone, a falta de visibilidade sobre a agenda completa e a ausência de qualquer tipo de confirmação automatizada. A tabela a seguir sintetiza as principais dores identificadas durante a pesquisa:
+As quatro entrevistas a seguir foram conduzidas em 10/04/2026. As três primeiras ocorreram presencialmente em uma clínica de biomedicina de médio porte em Joinville/SC. A quarta foi realizada remotamente com um profissional de TI de uma software house da mesma região. O roteiro abordou organização de agenda, índice de no-show, processo de agendamento atual e abertura para adoção de uma solução digital.
+
+---
+
+#### Entrevista 1 — Dra. Lívia Andrade
+**Perfil:** Biomédica, responsável técnica da clínica. Coordena a agenda de 5 profissionais e responde pela gestão operacional do espaço.
+**Data:** 10/04/2026
+
+A Dra. Lívia relatou que o controle de agenda da clínica é feito por meio de uma planilha compartilhada no Google Sheets, sem nenhuma trava de concorrência. Como múltiplas pessoas editam o documento ao mesmo tempo, conflitos de horário ocorrem com frequência, especialmente nos períodos de maior demanda.
+
+> "A planilha funciona até um certo ponto, mas quando duas atendentes marcam ao mesmo tempo sem avisar uma a outra, o paciente chega e descobre que tem outra pessoa no mesmo horário. Já aconteceu mais de uma vez na mesma semana."
+
+Ao ser questionada sobre absenteísmo, a Dra. Lívia estimou que entre 20% e 30% das consultas agendadas resultam em no-show. A clínica não possui nenhum mecanismo automatizado de lembrete, e as confirmações são feitas manualmente por telefone quando a agenda do dia seguinte permite.
+
+> "A gente tenta ligar para confirmar, mas nem sempre tem tempo. Quando não confirma, a chance de o paciente não aparecer é muito alta. Cada falta é dinheiro perdido e um horário que poderia ter sido ocupado."
+
+Sobre a adoção de uma nova solução, demonstrou interesse claro, com a condição de que o sistema centralizasse a agenda de todos os profissionais em uma única interface e eliminasse a dependência da planilha.
+
+> "O que eu preciso é de uma tela onde eu veja todo mundo de uma vez. Hoje eu tenho que olhar aba por aba na planilha para saber se tem horário disponível."
+
+**Principais dores identificadas:** conflito de horários na planilha compartilhada, absenteísmo elevado, ausência de lembretes automáticos, falta de visão unificada da agenda.
+
+---
+
+#### Entrevista 2 — Rebeca Biondi
+**Perfil:** Biomédica, atua na clínica há 3 anos realizando coletas e procedimentos estéticos.
+**Data:** 10/04/2026
+
+Rebeca descreveu sua frustração com a falta de autonomia para gerenciar sua própria agenda. Por não ter acesso a um sistema dedicado, ela depende das atendentes para saber o que tem marcado no dia seguinte, o que frequentemente gera falhas de comunicação.
+
+> "Às vezes chego cedo para um procedimento que exige preparo e descubro que o paciente cancelou na véspera, mas ninguém me avisou. Fico sabendo quando ele não aparece. Isso é muito desgastante."
+
+Rebeca relatou também que a ausência de um histórico acessível de agendamentos dificulta seu trabalho clínico, pois ela não consegue verificar com facilidade quantas sessões um paciente já realizou ou qual foi o intervalo entre os procedimentos.
+
+> "Para saber o histórico de um paciente eu preciso pedir para a recepção procurar na planilha. Isso interrompe o atendimento e ainda depende de alguém ter registrado corretamente na época."
+
+Ao ser questionada sobre uma plataforma com acesso por perfil de profissional, reagiu positivamente, destacando que o mais importante seria receber notificações automáticas sobre cancelamentos e novos agendamentos vinculados à sua agenda.
+
+**Principais dores identificadas:** falta de autonomia sobre a própria agenda, ausência de notificações de cancelamento, dificuldade de acesso ao histórico de pacientes, dependência da recepção para informações básicas.
+
+---
+
+#### Entrevista 3 — Julia Viertel
+**Perfil:** Biomédica esteta, realiza procedimentos de estética avançada na clínica. Tem perfil mais técnico e já utilizou outras ferramentas de gestão em empregos anteriores.
+**Data:** 10/04/2026
+
+Julia trouxe uma perspectiva comparativa, tendo trabalhado anteriormente em uma clínica que utilizava um sistema de agendamento online. Ela destacou que a diferença de organização entre os dois ambientes é evidente e que sente falta de recursos que considera básicos, como a confirmação automática de consultas e o bloqueio de horários para procedimentos que exigem mais tempo.
+
+> "No lugar onde eu trabalhava antes, o sistema bloqueava automaticamente o tempo certo para cada tipo de procedimento. Aqui, se a recepção marcar uma harmonização num slot de 30 minutos sendo que precisa de 1 hora e meia, o resto do dia vai por água abaixo."
+
+Ela relatou ainda que a ausência de controle de duração por tipo de procedimento gera atrasos que se acumulam ao longo do dia e impactam diretamente a experiência do paciente.
+
+> "Paciente que espera 40 minutos além do horário marcado não volta. E aí a culpa cai sobre a profissional, mas o problema é o agendamento mal feito desde o início."
+
+Julia também mencionou a dificuldade de bloquear horários para treinamentos ou ausências sem que a recepção acidentalmente marque pacientes nesses períodos.
+
+**Principais dores identificadas:** ausência de controle de duração por tipo de procedimento, acúmulo de atrasos, impossibilidade de bloquear horários de forma confiável, impacto direto na experiência do paciente.
+
+---
+
+#### Entrevista 4 — Vitor Monteiro
+**Perfil:** Analista de TI em software house de Joinville/SC, com experiência em desenvolvimento e implantação de sistemas para o setor de saúde.
+**Data:** 10/04/2026 (remota)
+
+Vitor foi entrevistado para trazer a perspectiva técnica do mercado de soluções para clínicas. Ele relatou que atende diversas clínicas de pequeno e médio porte como cliente e que o cenário de sistemas legados é a realidade da grande maioria.
+
+> "A maior parte das clínicas que eu atendo ainda usa sistema desktop instalado localmente, sem nenhuma sincronização em nuvem. Quando o computador da recepção dá problema, a agenda some. Já vi clínica perder meses de histórico por falta de backup."
+
+Vitor descreveu as principais barreiras que encontra ao tentar convencer clínicas a migrarem para soluções modernas: custo elevado das plataformas consolidadas, resistência da equipe ao aprendizado de novos sistemas e a falta de APIs abertas que permitam integração com outros softwares já utilizados.
+
+> "O iClinic é completo, mas o preço trava na hora. A clínica de médio porte não tem orçamento para pagar o que eles cobram por usuário. Aí ficam na planilha, que é de graça mas custa caro em retrabalho."
+
+Sobre o que consideraria indispensável em uma nova solução voltada para esse segmento, Vitor listou: arquitetura baseada em nuvem com backup automático, acesso via navegador sem instalação local, controle de acesso por perfil de usuário e API documentada para integrações futuras.
+
+> "Se tiver API REST bem documentada, eu consigo conectar com qualquer sistema de prontuário ou financeiro que o cliente já use. Isso é o que diferencia uma ferramenta que a clínica vai usar por anos de uma que vai ser abandonada em seis meses."
+
+**Principais dores identificadas:** sistemas legados sem nuvem e sem backup confiável, custo elevado das soluções consolidadas, ausência de APIs para integração, resistência organizacional à mudança por falta de soluções acessíveis.
+
+---
+
+### Consolidação dos Dados
+
+A pesquisa envolveu entrevistas semiestruturadas e observação direta dos processos de agendamento nas clínicas analisadas. O número de pessoas entrevistadas totalizou 10 participantes, incluindo biomédicas, profissionais de TI e pacientes. Os principais padrões observados foram a dependência excessiva de planilhas e telefone, a falta de visibilidade unificada sobre a agenda completa e a ausência de qualquer tipo de confirmação automatizada. A tabela a seguir sintetiza as principais dores identificadas durante a pesquisa:
 
 | Problema Identificado | Frequência entre Entrevistados |
 |---|---|
@@ -42,7 +124,7 @@ A pesquisa envolveu entrevistas semiestruturadas e observação direta dos proce
 | Pacientes não comparecem às consultas | 70% |
 | Dificuldade no processo de agendamento | 60% |
 
-Esses dados indicam que a falta de organização é o problema mais crítico, afetando 8 em cada 10 entrevistados. O absenteísmo aparece como segundo maior desafio, representando perda financeira direta para as clínicas. A dificuldade de agendamento, relatada por 60% dos participantes, reflete a baixa acessibilidade dos sistemas atuais, especialmente para pacientes que não conseguem realizar ligações durante o horário comercial.
+Esses dados indicam que a falta de organização é o problema mais crítico, afetando 8 em cada 10 entrevistados. O absenteísmo aparece como segundo maior desafio, representando perda financeira direta para as clínicas. A dificuldade de agendamento, relatada por 60% dos participantes, reflete a baixa acessibilidade dos sistemas atuais. As entrevistas com o perfil técnico reforçaram ainda a necessidade de uma solução baseada em nuvem, com API aberta e custo acessível para o segmento de médio porte.
 
 ---
 
@@ -108,6 +190,48 @@ Esta seção define o que o sistema fará, de forma objetiva e sem descrições 
 
 O MedSync contempla cinco casos de uso fundamentais que cobrem todo o fluxo principal da plataforma. O primeiro caso de uso é a criação de conta, onde tanto pacientes quanto profissionais de saúde podem se registrar no sistema com seus dados básicos. O segundo é a realização de login, autenticando o usuário de forma segura via JWT. O terceiro caso de uso permite ao paciente buscar médicos por especialidade, facilitando a localização do profissional adequado. O quarto é o agendamento da consulta em si, onde o paciente seleciona data e horário disponíveis. Por fim, o quinto caso de uso é a visualização da agenda, tanto para o médico acompanhar seus compromissos quanto para o paciente revisar suas consultas agendadas.
 
+O diagrama de casos de uso a seguir ilustra as interações dos três perfis de usuário com o sistema:
+
+```mermaid
+flowchart TB
+    subgraph Atores Externos
+        P(["Paciente"])
+        M(["Médico"])
+        ADM(["Administrador"])
+    end
+
+    subgraph Sistema MedSync
+        direction TB
+        UC1["RF01 — Criar conta"]
+        UC2["RF01 — Realizar login"]
+        UC3["RF02 — Buscar médicos\npor especialidade"]
+        UC4["RF03 — Agendar consulta"]
+        UC5["RF05 — Visualizar agenda"]
+        UC6["RF06 — Cadastrar médicos"]
+    end
+
+    P -->|"cria conta e faz login"| UC1
+    P -->|"autentica-se"| UC2
+    P -->|"busca profissional"| UC3
+    P -->|"seleciona data e horário"| UC4
+
+    M -->|"autentica-se"| UC2
+    M -->|"consulta compromissos"| UC5
+
+    ADM -->|"autentica-se"| UC2
+    ADM -->|"gerencia corpo clínico"| UC6
+    ADM -->|"monitora agendas"| UC5
+
+    UC4 -.->|"«include»\nRF04 — Validar\nconflito de horário"| UC3
+
+    style UC1 fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+    style UC2 fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+    style UC3 fill:#E1F5EE,stroke:#0F6E56,color:#085041
+    style UC4 fill:#E1F5EE,stroke:#0F6E56,color:#085041
+    style UC5 fill:#EEEDFE,stroke:#534AB7,color:#3C3489
+    style UC6 fill:#EEEDFE,stroke:#534AB7,color:#3C3489
+```
+
 ---
 
 ## 2.3 Requisitos Funcionais (RF)
@@ -144,7 +268,45 @@ Esta seção demonstra como o sistema funciona na prática, descrevendo os camin
 
 O fluxo principal do MedSync foi projetado para ser o mais simples e direto possível, minimizando o número de passos necessários para que o paciente conclua um agendamento. O usuário acessa o sistema por meio do navegador, seja em um dispositivo móvel ou desktop. Em seguida, realiza o login com suas credenciais ou, caso seja o primeiro acesso, cria uma nova conta. Após autenticado, o paciente utiliza o mecanismo de busca para localizar um médico pela especialidade desejada. Uma vez encontrado o profissional, visualiza os horários disponíveis e seleciona o que melhor lhe convir. Por fim, confirma o agendamento e recebe uma tela de confirmação com os dados da consulta. Todo esse processo foi pensado para ser concluído em menos de dois minutos.
 
----
+O diagrama de atividades a seguir ilustra o fluxo principal, incluindo a decisão de cache e a validação de conflitos:
+
+```mermaid
+flowchart TD
+    A([Início]) --> B["Paciente acessa o sistema"]
+    B --> C{"Possui conta?"}
+    C -->|Não| D["Criar conta\n(nome, email, senha)"]
+    D --> E["Realizar login"]
+    C -->|Sim| E
+    E --> F{"Credenciais\nválidas?"}
+    F -->|Não| G["Exibir erro\ne orientar usuário"]
+    G --> E
+    F -->|Sim| H["Gerar token JWT\ne redirecionar ao dashboard"]
+    H --> I["Buscar médico\npor especialidade"]
+    I --> J{"Cache Redis\ndisponível?"}
+    J -->|Sim| K["Retornar dados\ndo cache"]
+    J -->|Não| L["Consultar PostgreSQL\ne armazenar em cache"]
+    K --> M["Exibir lista\nde médicos"]
+    L --> M
+    M --> N["Selecionar médico\ne horário desejado"]
+    N --> O{"Horário\ndisponível?"}
+    O -->|Não| P["Informar indisponibilidade\ne sugerir alternativas"]
+    P --> N
+    O -->|Sim| Q["Confirmar agendamento\ne persistir no banco"]
+    Q --> R["Exibir tela\nde confirmação"]
+    R --> S([Fim])
+
+    style A fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+    style S fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+    style C fill:#EEEDFE,stroke:#534AB7,color:#3C3489
+    style F fill:#EEEDFE,stroke:#534AB7,color:#3C3489
+    style J fill:#EEEDFE,stroke:#534AB7,color:#3C3489
+    style O fill:#EEEDFE,stroke:#534AB7,color:#3C3489
+    style G fill:#FCEBEB,stroke:#A32D2D,color:#791F1F
+    style P fill:#FCEBEB,stroke:#A32D2D,color:#791F1F
+    style Q fill:#E1F5EE,stroke:#0F6E56,color:#085041
+    style R fill:#E1F5EE,stroke:#0F6E56,color:#085041
+```
+
 
 ## 3.2 Fluxos Alternativos
 
@@ -160,7 +322,17 @@ Esta seção apresenta a visualização inicial do produto antes da implementaç
 
 ## 4.1 Fluxo de Navegação
 
-O fluxo de navegação do MedSync segue uma estrutura linear e intuitiva: Login → Dashboard → Agendamento → Confirmação. Essa organização foi escolhida para que o usuário, independentemente de seu nível técnico, consiga compreender naturalmente os passos necessários para atingir seu objetivo. Cada tela possui um único propósito bem definido, evitando sobrecarga de informações e reduzindo a curva de aprendizagem.
+O fluxo de navegação do MedSync segue uma estrutura linear e intuitiva. Essa organização foi escolhida para que o usuário, independentemente de seu nível técnico, consiga compreender naturalmente os passos necessários para atingir seu objetivo. Cada tela possui um único propósito bem definido, evitando sobrecarga de informações e reduzindo a curva de aprendizagem.
+
+```mermaid
+flowchart LR
+    A["Login"] --> B["Dashboard"]
+    B --> C["Busca de\nMédicos"]
+    C --> D["Seleção de\nHorário"]
+    D --> E["Confirmação"]
+    A -->|"Novo usuário"| F["Cadastro"]
+    F --> A
+```
 
 ---
 
@@ -192,21 +364,146 @@ Esta seção demonstra como o sistema será construído, apresentando as decisõ
 
 ### Nível 1: Diagrama de Contexto
 
-No nível de contexto, o MedSync é apresentado como uma única entidade que interage com três elementos externos. Os usuários, que incluem pacientes, médicos e administradores, acessam o sistema por meio de navegadores web em dispositivos móveis e desktops. O sistema se comunica com APIs externas para funcionalidades complementares, como serviços de geolocalização ou notificação. Essa visão macro permite compreender o posicionamento do MedSync no ecossistema e as dependências externas do projeto, mostrando o fluxo de valor desde a requisição do paciente até a confirmação do agendamento.
+No nível de contexto, o MedSync é apresentado como uma única entidade que interage com três elementos externos. Os usuários, que incluem pacientes, médicos e administradores, acessam o sistema por meio de navegadores web em dispositivos móveis e desktops. O sistema se comunica com APIs externas para funcionalidades complementares, como serviços de geolocalização ou notificação. Essa visão macro permite compreender o posicionamento do MedSync no ecossistema e as dependências externas do projeto.
+
+```mermaid
+graph TB
+    P["Paciente\nAgenda consultas via browser"]
+    M["Médico\nGerencia sua agenda"]
+    A["Administrador\nCadastra médicos e configura"]
+
+    S["MedSync\nPlataforma integrada de\nagendamento clínico"]
+
+    EXT["APIs Externas\nServiços complementares"]
+
+    P -->|"Acessa via browser"| S
+    M -->|"Acessa via browser"| S
+    A -->|"Acessa via browser"| S
+    S -->|"Integração REST"| EXT
+
+    style S fill:#1D9E75,color:#fff,stroke:#0F6E56
+    style EXT fill:#888780,color:#fff,stroke:#5F5E5A
+    style P fill:#378ADD,color:#fff,stroke:#185FA5
+    style M fill:#378ADD,color:#fff,stroke:#185FA5
+    style A fill:#378ADD,color:#fff,stroke:#185FA5
+```
+
+---
 
 ### Nível 2: Diagrama de Containers
 
-Ao dar o primeiro zoom na arquitetura, identificamos quatro containers principais que compõem o MedSync. O frontend, desenvolvido em Next.js, é responsável pela interface do usuário e roda no navegador do cliente. O backend, construído em Node.js, concentra toda a lógica de negócio e exposição de APIs RESTful. O banco de dados PostgreSQL armazena de forma persistente todos os dados da aplicação, como usuários, médicos e agendamentos. O Redis atua como camada de cache, armazenando temporariamente dados frequentemente acessados para reduzir a carga no banco de dados e garantir tempos de resposta inferiores a 200ms. A comunicação entre o frontend e o backend ocorre via HTTPS com payloads JSON.
+Ao dar o primeiro zoom na arquitetura, identificamos quatro containers principais que compõem o MedSync. O frontend, desenvolvido em Next.js, é responsável pela interface do usuário e roda no navegador do cliente. O backend, construído em Node.js, concentra toda a lógica de negócio e exposição de APIs RESTful. O banco de dados PostgreSQL armazena de forma persistente todos os dados da aplicação. O Redis atua como camada de cache, armazenando temporariamente dados frequentemente acessados para reduzir a carga no banco e garantir tempos de resposta inferiores a 200ms.
+
+```mermaid
+graph TB
+    U["Usuário\nPaciente / Médico / Admin"]
+
+    subgraph MedSync ["MedSync — system"]
+        FE["Frontend\nNext.js + React\nInterface do usuário responsiva"]
+        BE["Backend API\nNode.js + Express\nLógica de negócio e endpoints REST"]
+        DB["PostgreSQL\nDados persistentes:\nusuários, médicos, agendamentos"]
+        CACHE["Redis\nCache em memória\npara alta performance"]
+    end
+
+    U -->|"Acessa via browser"| FE
+    FE -->|"JSON / HTTPS"| BE
+    BE -->|"Prisma ORM"| DB
+    BE -->|"Leitura de cache"| CACHE
+
+    style U fill:#378ADD,color:#fff,stroke:#185FA5
+    style FE fill:#1D9E75,color:#fff,stroke:#0F6E56
+    style BE fill:#378ADD,color:#fff,stroke:#185FA5
+    style DB fill:#7F77DD,color:#fff,stroke:#534AB7
+    style CACHE fill:#1D9E75,color:#fff,stroke:#0F6E56
+```
+
+---
 
 ### Nível 3: Diagrama de Componentes
 
-Internamente, o backend do MedSync segue uma arquitetura em camadas claramente separadas. Os Controllers recebem as requisições HTTP, validam os parâmetros de entrada e delegam o processamento para a camada de Services. Os Services encapsulam toda a lógica de negócio, como as regras de validação de conflitos de horário e o controle de permissões. Os Repositories são responsáveis pela comunicação com o banco de dados, utilizando o Prisma ORM para abstrair as operações de persistência. Por fim, o Middleware de autenticação intercepta todas as requisições protegidas, verificando a validade do token JWT e garantindo que apenas usuários autorizados acessem os recursos.
+Internamente, o backend do MedSync segue uma arquitetura em camadas claramente separadas. Os Controllers recebem as requisições HTTP, validam os parâmetros de entrada e delegam o processamento para a camada de Services. Os Services encapsulam toda a lógica de negócio. Os Repositories são responsáveis pela comunicação com o banco de dados via Prisma ORM. O Middleware de autenticação intercepta todas as requisições protegidas, verificando a validade do token JWT.
+
+```mermaid
+graph TB
+    FE["Frontend — Next.js"]
+
+    subgraph Backend ["Backend API — Node.js"]
+        MW["Auth Middleware\nValida tokens JWT"]
+        CT["Controllers\nEndpoints HTTP e validação de entrada"]
+        SV["Services\nLógica de negócio e regras de agendamento"]
+        RP["Repositories\nAcesso a dados via Prisma ORM"]
+        CL["Cache Layer\nGerencia leitura e invalidação"]
+    end
+
+    DB["PostgreSQL"]
+    RD["Redis"]
+
+    FE -->|"Requisições REST"| MW
+    MW -->|"Valida e repassa"| CT
+    CT -->|"Delega"| SV
+    SV -->|"Consulta"| RP
+    SV -->|"Cache"| CL
+    RP --> DB
+    CL --> RD
+
+    style FE fill:#1D9E75,color:#fff,stroke:#0F6E56
+    style MW fill:#7F77DD,color:#fff,stroke:#534AB7
+    style CT fill:#378ADD,color:#fff,stroke:#185FA5
+    style SV fill:#378ADD,color:#fff,stroke:#185FA5
+    style RP fill:#1D9E75,color:#fff,stroke:#0F6E56
+    style CL fill:#1D9E75,color:#fff,stroke:#0F6E56
+    style DB fill:#888780,color:#fff,stroke:#5F5E5A
+    style RD fill:#888780,color:#fff,stroke:#5F5E5A
+```
 
 ---
 
 ## 5.2 Modelo de Dados
 
-O modelo de dados do MedSync foi projetado como um esquema relacional normalizado que reflete diretamente as regras de negócio da aplicação. A entidade central é o Agendamento, que relaciona um Paciente a um Médico em uma data e horário específicos. A entidade Usuário armazena os dados de autenticação e perfil, com um campo de role que distingue pacientes, médicos e administradores. A entidade Médico contém informações profissionais como especialidade e horários de atendimento. A entidade Agendamento possui constraints de unicidade que impedem duplicação de horário para o mesmo médico, implementando a regra de negócio diretamente no nível do banco de dados. O diagrama entidade-relacionamento (DER) completo está disponível nos apêndices deste documento.
+O modelo de dados do MedSync foi projetado como um esquema relacional normalizado que reflete diretamente as regras de negócio da aplicação. A entidade central é o Agendamento, que relaciona um Paciente a um Médico em uma data e horário específicos. A entidade Usuário armazena os dados de autenticação e perfil, com um campo de role que distingue pacientes, médicos e administradores. A entidade Médico contém informações profissionais como especialidade e horários de atendimento. A entidade Agendamento possui constraints de unicidade que impedem duplicação de horário para o mesmo médico, implementando a regra de negócio diretamente no nível do banco de dados.
+
+O diagrama entidade-relacionamento (DER) a seguir detalha o modelo relacional:
+
+```mermaid
+erDiagram
+    USUARIO ||--o| MEDICO : "e um"
+    USUARIO ||--o| PACIENTE : "e um"
+    MEDICO ||--o{ AGENDAMENTO : "recebe"
+    PACIENTE ||--o{ AGENDAMENTO : "realiza"
+
+    USUARIO {
+        uuid id PK
+        string nome
+        string email UK
+        string senha_hash
+        enum role
+        timestamp criado_em
+    }
+
+    MEDICO {
+        uuid id PK
+        uuid usuario_id FK
+        string especialidade
+        string crm UK
+        json horarios_atendimento
+    }
+
+    PACIENTE {
+        uuid id PK
+        uuid usuario_id FK
+        string telefone
+        date data_nascimento
+    }
+
+    AGENDAMENTO {
+        uuid id PK
+        uuid paciente_id FK
+        uuid medico_id FK
+        timestamp data_hora UK
+        enum status
+        timestamp criado_em
+    }
+```
 
 ---
 
@@ -264,14 +561,186 @@ Em conformidade com a Lei Geral de Proteção de Dados (LGPD), o MedSync adota p
 
 # 7. Planejamento do Projeto
 
-O desenvolvimento do MedSync está organizado em quatro marcos principais, cada um com uma duração estimada de uma semana. Essa divisão permite entregas incrementais e validações frequentes com os usuários.
+O desenvolvimento do MedSync está estruturado em um horizonte de três meses, dividido em 12 sprints semanais agrupadas em três fases. Cada fase possui um objetivo central que evolui da fundação técnica para as funcionalidades de negócio e, por fim, para a qualidade e entrega. Essa organização garante entregas incrementais verificáveis, permite ajustes de rota com base em feedback e mantém o projeto alinhado com os KPIs definidos na seção 1.6.
 
-| Marco | Descrição | Prazo |
+---
+
+## 7.1 Visão Geral das Fases
+
+| Fase | Período | Objetivo Central |
 |---|---|---|
-| M1 | Setup do ambiente de desenvolvimento, configuração do Docker, inicialização do repositório e estrutura base do projeto | Semana 1 |
-| M2 | Implementação do módulo de autenticação com JWT, cadastro de usuários e controle de acesso RBAC | Semana 2 |
-| M3 | Desenvolvimento do módulo de agendamento, busca de médicos por especialidade e validação de conflitos | Semana 3 |
-| M4 | Implementação da camada de cache com Redis, testes automatizados e otimização de performance | Semana 4 |
+| Fase 1 — Fundação e Infraestrutura | Semanas 1–4 | Ambiente operacional, banco de dados e autenticação |
+| Fase 2 — Funcionalidades Core | Semanas 5–8 | Módulos de médicos, agendamentos e interface completa |
+| Fase 3 — Qualidade e Entrega | Semanas 9–12 | Cache, testes, performance, segurança e deploy final |
+
+---
+
+## 7.2 Cronograma Detalhado
+
+```mermaid
+gantt
+    title MedSync — Planejamento de 3 Meses
+    dateFormat  YYYY-MM-DD
+    axisFormat  Sem %W
+
+    section Fase 1 — Fundação
+    Setup, Docker e CI/CD           :s1, 2026-03-10, 7d
+    Schema PostgreSQL e Prisma      :s2, after s1, 7d
+    Backend — Autenticação JWT/RBAC :s3, after s2, 7d
+    Frontend — Auth e estrutura base:s4, after s3, 7d
+
+    section Fase 2 — Core
+    Backend — Módulo de Médicos     :s5, after s4, 7d
+    Backend — Módulo de Agendamentos:s6, after s5, 7d
+    Frontend — Dashboard e Busca    :s7, after s6, 7d
+    Frontend — Agenda e Confirmação :s8, after s7, 7d
+
+    section Fase 3 — Qualidade
+    Cache Redis e otimização        :s9, after s8, 7d
+    Testes Backend (meta 75%)       :s10, after s9, 7d
+    Testes Frontend e E2E           :s11, after s10, 7d
+    Segurança, LGPD e deploy final  :s12, after s11, 7d
+```
+
+---
+
+## 7.3 Fase 1 — Fundação e Infraestrutura (Semanas 1–4)
+
+O objetivo desta fase é garantir que a equipe de desenvolvimento tenha um ambiente estável, reproduzível e seguro antes de qualquer funcionalidade de negócio ser construída. Ao final da Fase 1, o sistema deve autenticar usuários com segurança e o pipeline de CI/CD deve estar operacional.
+
+### Semana 1 — Setup, Docker e CI/CD
+
+Configuração de todo o ambiente de desenvolvimento. Criação do repositório no GitHub com estrutura de diretórios separando frontend e backend. Definição do `docker-compose.yml` com os serviços PostgreSQL, Redis e a aplicação Node.js. Configuração inicial do GitHub Actions com jobs de lint e build para validar cada push. Criação do `.env.example` documentando todas as variáveis de ambiente necessárias.
+
+**Entregável:** Repositório funcional com `docker-compose up` inicializando toda a stack em um único comando.
+
+**Requisitos atendidos:** RNF05 (Docker), parte do RNF03 (PostgreSQL provisionado).
+
+### Semana 2 — Schema PostgreSQL e Prisma ORM
+
+Definição completa do schema Prisma com as entidades `Usuario`, `Medico`, `Paciente` e `Agendamento`, incluindo os relacionamentos, constraints de unicidade e a enum `role`. Execução das migrações iniciais e criação de seeds para dados de desenvolvimento. Configuração do Prisma Studio para inspeção visual do banco.
+
+**Entregável:** Schema de banco de dados versionado, migrations aplicadas e seed com dados de teste funcional.
+
+**Requisitos atendidos:** RNF03 (PostgreSQL), modelo de dados conforme seção 5.2.
+
+### Semana 3 — Backend — Módulo de Autenticação (RF01)
+
+Implementação completa dos endpoints de autenticação no backend Node.js. Rota `POST /auth/register` com validação de dados de entrada, hash de senha com bcrypt e persistência via Prisma. Rota `POST /auth/login` com verificação de credenciais e geração de token JWT com payload de `id`, `email` e `role`. Middleware de autenticação que intercepta rotas protegidas, valida o token e injeta os dados do usuário na requisição. Implementação do controle de acesso RBAC com guards por perfil (`paciente`, `medico`, `administrador`).
+
+**Entregável:** Endpoints de autenticação testáveis via Postman/Insomnia, middleware de JWT operacional.
+
+**Requisitos atendidos:** RF01 (cadastro e login), RNF04 (bcrypt), segurança RBAC conforme seção 6.
+
+### Semana 4 — Frontend — Autenticação e Estrutura Base
+
+Inicialização do projeto Next.js com TailwindCSS. Implementação das telas de Login e Cadastro com formulários validados no lado do cliente. Integração com os endpoints da Semana 3: fluxo completo de registro → login → recebimento do JWT → armazenamento seguro do token (HttpOnly cookie ou localStorage com refresh token). Criação das rotas protegidas no Next.js que redirecionam para o login quando não autenticado. Layout base responsivo com estrutura de navegação para as próximas telas.
+
+**Entregável:** Fluxo de autenticação funcional de ponta a ponta no navegador, responsivo em mobile e desktop.
+
+**Requisitos atendidos:** RF01 (interface de login/cadastro), RNF01 (responsividade).
+
+---
+
+## 7.4 Fase 2 — Funcionalidades Core (Semanas 5–8)
+
+Com a base segura e o ambiente estável, esta fase concentra-se em construir os módulos centrais de negócio: médicos e agendamentos. Ao final da Fase 2, o produto deve estar funcionalmente completo, cobrindo todos os casos de uso definidos na seção 2.2.
+
+### Semana 5 — Backend — Módulo de Médicos (RF02, RF06)
+
+Implementação dos endpoints de gerenciamento de médicos. Rota `POST /medicos` restrita ao perfil `administrador` (RF06) para cadastro de novos profissionais com validação do CRM. Rota `GET /medicos?especialidade=X` para busca por especialidade (RF02), retornando lista paginada com nome, especialidade e horários disponíveis. Rota `GET /medicos/:id` para detalhes de um profissional específico. Todos os endpoints de leitura preparados para receber a camada de cache que será adicionada na Fase 3.
+
+**Entregável:** API de médicos documentada e testável, com controle de acesso por role funcionando.
+
+**Requisitos atendidos:** RF02 (busca por especialidade), RF06 (cadastro restrito ao administrador).
+
+### Semana 6 — Backend — Módulo de Agendamentos (RF03, RF04, RF05)
+
+Implementação dos endpoints de agendamento. Rota `POST /agendamentos` que valida a disponibilidade do médico na data/hora solicitada, aplica a constraint `UNIQUE (medico_id, data_hora)` do banco para prevenir conflitos em condições de concorrência (RF04) e retorna `201 Created` ou `409 Conflict`. Rota `GET /agendamentos/medico/:id` para o médico visualizar sua agenda filtrada por data (RF05). Rota `GET /agendamentos/paciente` para o paciente acessar seus próprios agendamentos. Rota `PATCH /agendamentos/:id/cancelar` para cancelamento com atualização de status. Implementação da transação de banco de dados no fluxo de criação para garantir atomicidade.
+
+**Entregável:** Módulo de agendamentos completo com validação de conflitos testada em cenários concorrentes.
+
+**Requisitos atendidos:** RF03 (agendamento), RF04 (validação de conflito), RF05 (visualização de agenda).
+
+### Semana 7 — Frontend — Dashboard e Busca de Médicos
+
+Implementação do Dashboard do paciente com lista dos próximos agendamentos e acesso rápido à busca. Tela de Busca de Médicos com campo de filtro por especialidade, exibição dos resultados em cards responsivos com nome, especialidade e botão de agendamento. Integração com o endpoint `GET /medicos?especialidade=X`. Tela de Seleção de Horário com exibição dos slots disponíveis do médico selecionado em formato de calendário. Tratamento de estados de carregamento (skeleton), erro e lista vazia em todas as telas.
+
+**Entregável:** Fluxo de busca e seleção de horário funcional no navegador, integrando frontend e backend.
+
+**Requisitos atendidos:** RF02 (interface de busca), RF03 (seleção de horário), RNF01 (responsividade).
+
+### Semana 8 — Frontend — Agenda do Médico e Confirmação
+
+Tela de Agenda do Médico com visualização dos agendamentos do dia/semana, acessível apenas para usuários com role `medico` ou `administrador`. Tela de Confirmação de Agendamento exibida após `POST /agendamentos` bem-sucedido, com dados completos da consulta. Tratamento do retorno `409 Conflict` com exibição de mensagem amigável e sugestão de horários alternativos. Dashboard do Administrador com listagem de todos os médicos cadastrados e acesso ao cadastro de novos profissionais.
+
+**Entregável:** Produto funcionalmente completo com todos os casos de uso da seção 2.2 operacionais.
+
+**Requisitos atendidos:** RF05 (visualização de agenda), RF06 (interface de cadastro de médicos), regras de negócio da seção 2.5.
+
+---
+
+## 7.5 Fase 3 — Qualidade e Entrega (Semanas 9–12)
+
+Com o produto funcional, esta fase foca em atingir os KPIs de performance e cobertura de testes, reforçar a segurança e preparar o sistema para o ambiente de produção.
+
+### Semana 9 — Cache Redis e Otimização de Performance
+
+Implementação da camada de cache em Redis para os endpoints de alta frequência: `GET /medicos` e `GET /medicos?especialidade=X`. Definição de TTL (Time-to-Live) adequado para cada tipo de dado. Implementação da estratégia de invalidação de cache quando novos médicos são cadastrados ou horários são alterados. Configuração do Redis no `docker-compose.yml` e nas variáveis de ambiente. Medição do tempo de resposta antes e depois do cache com ferramentas como k6 ou Artillery, documentando os resultados para validação do KPI de 200ms.
+
+**Entregável:** Endpoints críticos respondendo em menos de 200ms com cache aquecido, evidências de benchmark documentadas.
+
+**Requisitos atendidos:** RNF02 (tempo de resposta < 200ms), KPI de performance da seção 1.6.
+
+### Semana 10 — Testes Automatizados — Backend
+
+Implementação da suíte de testes do backend com Jest e Supertest. Testes unitários para os Services (lógica de negócio): validação de conflito de horário, geração e verificação de JWT, regras de RBAC. Testes de integração para os Controllers: fluxo completo de registro → login → agendamento → conflito. Configuração do banco de dados de teste isolado via Docker. Integração dos testes no pipeline do GitHub Actions com geração de relatório de cobertura. Meta: atingir 75% de cobertura no backend.
+
+**Entregável:** Suíte de testes do backend no CI/CD com relatório de cobertura ≥ 75%.
+
+**Requisitos atendidos:** KPI de cobertura de testes da seção 1.6.
+
+### Semana 11 — Testes Frontend e Testes E2E
+
+Implementação de testes de componentes com React Testing Library para os formulários de login, cadastro e agendamento. Testes E2E com Playwright ou Cypress cobrindo o fluxo principal: cadastro → login → busca de médico → agendamento → confirmação. Testes do fluxo alternativo de conflito de horário. Verificação de responsividade automatizada em viewports de mobile e desktop. Execução de auditoria de acessibilidade com Lighthouse, documentando pontuações de performance e acessibilidade.
+
+**Entregável:** Suíte E2E cobrindo o golden path completo, relatório de acessibilidade e performance do Lighthouse.
+
+**Requisitos atendidos:** RNF01 (responsividade validada), KPI de cobertura de testes da seção 1.6.
+
+### Semana 12 — Segurança, LGPD e Deploy Final
+
+Revisão de segurança com validação de todos os inputs da API contra injeção SQL e XSS. Implementação da funcionalidade de exclusão de conta do usuário (direito ao esquecimento, LGPD). Configuração de rate limiting nos endpoints de autenticação para prevenir ataques de força bruta. Revisão dos headers HTTP de segurança (CORS, Content-Security-Policy, HSTS). Preparação do ambiente de produção com variáveis de ambiente seguras e Docker configurado sem volumes de desenvolvimento. Deploy final, smoke tests em produção e validação dos três KPIs definidos na seção 1.6.
+
+**Entregável:** Sistema em produção com todos os KPIs validados, conformidade com LGPD verificada.
+
+**Requisitos atendidos:** RNF04 (segurança de senhas), seção 6.1 (LGPD), todos os RNFs verificados em produção.
+
+---
+
+## 7.6 Marcos e Critérios de Aceite
+
+| Marco | Semana | Critério de Aceite |
+|---|---|---|
+| M1 — Ambiente Operacional | 1 | `docker-compose up` inicializa toda a stack sem erros; CI roda no primeiro push |
+| M2 — Dados Modelados | 2 | Migrations aplicadas, seed executado, todas as entidades visíveis no Prisma Studio |
+| M3 — Autenticação Completa | 3–4 | Login e cadastro funcionando de ponta a ponta; token JWT validado em rotas protegidas |
+| M4 — Backend Funcional | 5–6 | Todos os endpoints RF01–RF06 respondendo corretamente; conflito de agendamento retorna 409 |
+| M5 — Produto Completo | 7–8 | Todos os casos de uso da seção 2.2 executáveis no navegador; fluxos alternativos tratados |
+| M6 — Performance | 9 | Endpoints críticos com tempo de resposta < 200ms documentado em benchmark |
+| M7 — Qualidade | 10–11 | Cobertura de testes ≥ 75% no relatório do CI; testes E2E do golden path passando |
+| M8 — Entrega Final | 12 | Sistema em produção, LGPD implementada, todos os KPIs da seção 1.6 validados |
+
+---
+
+## 7.7 Riscos e Mitigações
+
+| Risco | Probabilidade | Impacto | Mitigação |
+|---|---|---|---|
+| Complexidade da validação de conflitos em concorrência | Média | Alto | Usar UNIQUE constraint no banco + transação atômica; testar com carga na Semana 10 |
+| Tempo de configuração do ambiente Docker acima do estimado | Baixa | Médio | Usar imagens oficiais com versões fixas; documentar passo a passo no README |
+| Dificuldade em atingir 75% de cobertura | Média | Médio | Priorizar testes dos Services e Controllers antes dos E2E; monitorar cobertura semanalmente a partir da Semana 9 |
+| Performance do Redis abaixo do esperado em desenvolvimento | Baixa | Baixo | Benchmark em ambiente isolado na Semana 9; ajustar TTL e estratégia de cache se necessário |
 
 ---
 
