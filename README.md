@@ -20,7 +20,7 @@ O objetivo desta seção é responder uma pergunta fundamental: este projeto res
 
 ---
 
-## 1.1 Contexto e Problema 
+## 1.1 Contexto e Problema
 
 O processo de agendamento de consultas médicas em clínicas de médio porte ainda é, em grande parte, dependente de métodos manuais ou de sistemas isolados e pouco integrados entre si. Essa realidade gera uma série de problemas operacionais que afetam tanto os profissionais de saúde quanto os pacientes. Conflitos de agenda ocorrem com frequência quando múltiplos atendentes tentam coordenar horários sem uma visão unificada da disponibilidade dos médicos. O índice de absenteísmo (no-show) permanece elevado, uma vez que não há mecanismos eficientes de lembrete ou confirmação automatizada.
 
@@ -236,19 +236,30 @@ flowchart TB
 
 ## 2.3 Requisitos Funcionais (RF)
 
-O sistema deve atender a seis requisitos funcionais principais. O RF01 estabelece que o sistema deve permitir o cadastro e login de usuários com autenticação baseada em JWT, garantindo segurança desde o primeiro acesso. O RF02 determina que o sistema deve possibilitar a busca de médicos por especialidade, permitindo que o paciente encontre rapidamente o profissional desejado. O RF03 define que o sistema deve permitir o agendamento de consultas com seleção de data e horário. O RF04 exige que o sistema impeça conflitos de horário, validando automaticamente a disponibilidade antes de confirmar qualquer agendamento. O RF05 garante que o médico possa visualizar sua agenda de forma organizada e intuitiva. Por último, o RF06 estabelece que apenas administradores possam cadastrar novos médicos no sistema, mantendo o controle sobre o corpo clínico.
+- **RF01 — Autenticação de usuários:** o sistema deve permitir o cadastro e login de usuários com autenticação baseada em JWT, garantindo segurança desde o primeiro acesso.
+- **RF02 — Busca de profissionais:** o sistema deve possibilitar a busca de profissionais por especialidade, permitindo que o paciente encontre rapidamente o profissional desejado.
+- **RF03 — Agendamento de consultas:** o sistema deve permitir o agendamento de consultas com seleção de data e horário disponíveis.
+- **RF04 — Validação de conflito de horário:** o sistema deve impedir conflitos de horário, validando automaticamente a disponibilidade antes de confirmar qualquer agendamento.
+- **RF05 — Visualização de agenda:** o profissional deve poder visualizar sua agenda de forma organizada e intuitiva, com filtro por data.
+- **RF06 — Cadastro restrito de profissionais:** apenas administradores podem cadastrar novos profissionais no sistema, mantendo o controle sobre o corpo clínico.
 
 ---
 
 ## 2.4 Requisitos Não Funcionais (RNF)
 
-Além dos requisitos funcionais, o MedSync deve atender a cinco requisitos não funcionais que garantem a qualidade técnica da solução. O RNF01 exige que a interface seja totalmente responsiva, adaptando-se a diferentes tamanhos de tela para oferecer uma experiência consistente em dispositivos móveis e desktops. O RNF02 determina que o tempo de resposta das operações críticas seja inferior a 200 milissegundos, assegurando fluidez na interação. O RNF03 define o PostgreSQL como banco de dados relacional do projeto, conforme justificado na seção de stack tecnológica. O RNF04 exige que as senhas sejam armazenadas com hash seguro utilizando bcrypt, protegendo as credenciais dos usuários mesmo em caso de comprometimento do banco de dados. O RNF05 estabelece que todo o sistema deve ser containerizado com Docker, garantindo consistência entre os ambientes de desenvolvimento, teste e produção.
+- **RNF01 — Responsividade:** a interface deve ser totalmente responsiva, adaptando-se a diferentes tamanhos de tela para oferecer experiência consistente em dispositivos móveis e desktops.
+- **RNF02 — Performance:** o tempo de resposta das operações críticas deve ser inferior a 200 milissegundos, assegurando fluidez na interação.
+- **RNF03 — Banco de dados:** o sistema deve utilizar PostgreSQL como banco de dados relacional, conforme justificado na seção de stack tecnológica.
+- **RNF04 — Segurança de senhas:** as senhas devem ser armazenadas com hash seguro utilizando bcrypt, protegendo as credenciais dos usuários mesmo em caso de comprometimento do banco de dados.
+- **RNF05 — Containerização:** todo o sistema deve ser containerizado com Docker, garantindo consistência entre os ambientes de desenvolvimento, teste e produção.
 
 ---
 
 ## 2.5 Regras de Negócio
 
-O MedSync opera sob três regras de negócio fundamentais que orientam todo o comportamento da aplicação. A primeira regra é que não pode haver agendamento duplicado para o mesmo médico no mesmo horário, evitando conflitos que prejudicariam tanto o profissional quanto os pacientes. A segunda regra estabelece que apenas usuários com perfil de administrador podem cadastrar novos médicos no sistema, mantendo a integridade do corpo clínico. A terceira regra garante que cada paciente tenha acesso exclusivamente aos seus próprios dados e agendamentos, respeitando a privacidade e a segurança da informação.
+1. **RN01 — Sem agendamento duplicado:** não pode haver agendamento duplicado para o mesmo profissional no mesmo horário, evitando conflitos que prejudicariam tanto o profissional quanto os pacientes.
+2. **RN02 — Cadastro restrito:** apenas usuários com perfil de administrador podem cadastrar novos profissionais no sistema, mantendo a integridade do corpo clínico.
+3. **RN03 — Isolamento de dados do paciente:** cada paciente tem acesso exclusivamente aos seus próprios dados e agendamentos, respeitando a privacidade e a segurança da informação.
 
 ---
 
@@ -372,12 +383,19 @@ No nível de contexto, o MedSync é apresentado como uma única entidade que int
 
 ```mermaid
 graph TB
+    PC((" "))
     P["Paciente\nAgenda consultas via browser"]
+    PC --- P
+
+    MC((" "))
     M["Médico\nGerencia sua agenda"]
+    MC --- M
+
+    AC((" "))
     A["Administrador\nCadastra médicos e configura"]
+    AC --- A
 
     S["MedSync\nPlataforma integrada de\nagendamento clínico"]
-
     EXT["APIs Externas\nServiços complementares"]
 
     P -->|"Acessa via browser"| S
@@ -385,10 +403,15 @@ graph TB
     A -->|"Acessa via browser"| S
     S -->|"Integração REST"| EXT
 
+    linkStyle 0,1,2 stroke:none
+
     style S fill:#1D9E75,color:#fff,stroke:#0F6E56
     style EXT fill:#888780,color:#fff,stroke:#5F5E5A
+    style PC fill:#378ADD,stroke:#185FA5,color:#378ADD
     style P fill:#378ADD,color:#fff,stroke:#185FA5
+    style MC fill:#378ADD,stroke:#185FA5,color:#378ADD
     style M fill:#378ADD,color:#fff,stroke:#185FA5
+    style AC fill:#378ADD,stroke:#185FA5,color:#378ADD
     style A fill:#378ADD,color:#fff,stroke:#185FA5
 ```
 
@@ -400,7 +423,9 @@ Ao dar o primeiro zoom na arquitetura, identificamos quatro containers principai
 
 ```mermaid
 graph TB
+    UC((" "))
     U["Usuário\nPaciente / Médico / Admin"]
+    UC --- U
 
     subgraph MedSync ["MedSync — system"]
         FE["Frontend\nNext.js + React\nInterface do usuário responsiva"]
@@ -414,6 +439,9 @@ graph TB
     BE -->|"Prisma ORM"| DB
     BE -->|"Leitura de cache"| CACHE
 
+    linkStyle 0 stroke:none
+
+    style UC fill:#378ADD,stroke:#185FA5,color:#378ADD
     style U fill:#378ADD,color:#fff,stroke:#185FA5
     style FE fill:#1D9E75,color:#fff,stroke:#0F6E56
     style BE fill:#378ADD,color:#fff,stroke:#185FA5
