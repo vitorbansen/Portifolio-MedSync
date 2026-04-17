@@ -2,8 +2,10 @@ import { z } from 'zod';
 
 export const createAgendamentoSchema = z
   .object({
-    medicoId: z.string().uuid('medicoId inválido'),
+    medicoId: z.string().uuid('medicoId inválido').optional(),
     pacienteId: z.string().uuid('pacienteId inválido').optional(),
+    pacienteNome: z.string().trim().min(2).max(120).optional(),
+    pacienteTelefone: z.string().trim().min(8).max(20).optional(),
     periodoInicio: z.coerce.date(),
     periodoFim: z.coerce.date(),
   })

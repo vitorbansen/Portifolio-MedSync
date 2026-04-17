@@ -101,6 +101,7 @@ async function main() {
       update: {},
       create: {
         usuarioId: usuario.id,
+        nome: p.nome,
         telefone: p.telefone,
         dataNascimento: p.dataNascimento,
       },

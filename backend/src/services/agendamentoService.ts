@@ -29,6 +29,7 @@ const agendamentoSelect = {
   paciente: {
     select: {
       id: true,
+      nome: true,
       telefone: true,
       usuario: { select: { id: true, nome: true, email: true } },
     },
@@ -47,35 +48,82 @@ async function getMedicoIdDoUsuario(usuarioId: string) {
   return medico?.id ?? null;
 }
 
+async function resolverPacienteIdPorNomeTelefone(nome: string, telefone: string) {
+  const existente = await prisma.paciente.findFirst({ where: { telefone } });
+  if (existente) return existente.id;
+  const criado = await prisma.paciente.create({ data: { nome, telefone } });
+  return criado.id;
+}
+
 export async function createAgendamento(input: CreateAgendamentoInput, solicitante: Solicitante) {
   if (input.periodoInicio < new Date()) {
     throw new AgendamentoError(400, 'periodoInicio deve ser no futuro');
   }
 
-  const medico = await prisma.medico.findUnique({ where: { id: input.medicoId } });
-  if (!medico) throw new AgendamentoError(404, 'Médico não encontrado');
-
+  let medicoId: string;
   let pacienteId: string;
+
   if (solicitante.role === Role.PACIENTE) {
+    if (!input.medicoId) {
+      throw new AgendamentoError(400, 'medicoId é obrigatório');
+    }
+    const medico = await prisma.medico.findUnique({ where: { id: input.medicoId } });
+    if (!medico) throw new AgendamentoError(404, 'Médico não encontrado');
+    medicoId = medico.id;
+
     const proprioId = await getPacienteIdDoUsuario(solicitante.sub);
     if (!proprioId) throw new AgendamentoError(403, 'Usuário não é paciente');
     if (input.pacienteId && input.pacienteId !== proprioId) {
       throw new AgendamentoError(403, 'Paciente só pode agendar para si mesmo');
     }
     pacienteId = proprioId;
-  } else {
-    if (!input.pacienteId) {
-      throw new AgendamentoError(400, 'pacienteId obrigatório para este perfil');
+  } else if (solicitante.role === Role.MEDICO) {
+    const proprioMedicoId = await getMedicoIdDoUsuario(solicitante.sub);
+    if (!proprioMedicoId) throw new AgendamentoError(403, 'Usuário não é médico');
+    if (input.medicoId && input.medicoId !== proprioMedicoId) {
+      throw new AgendamentoError(403, 'Médico só pode agendar para si mesmo');
     }
-    const paciente = await prisma.paciente.findUnique({ where: { id: input.pacienteId } });
-    if (!paciente) throw new AgendamentoError(404, 'Paciente não encontrado');
-    pacienteId = paciente.id;
+    medicoId = proprioMedicoId;
+
+    if (!input.pacienteNome || !input.pacienteTelefone) {
+      throw new AgendamentoError(
+        400,
+        'pacienteNome e pacienteTelefone são obrigatórios para agendamento criado pelo médico',
+      );
+    }
+    pacienteId = await resolverPacienteIdPorNomeTelefone(
+      input.pacienteNome,
+      input.pacienteTelefone,
+    );
+  } else {
+    if (!input.medicoId) {
+      throw new AgendamentoError(400, 'medicoId é obrigatório');
+    }
+    const medico = await prisma.medico.findUnique({ where: { id: input.medicoId } });
+    if (!medico) throw new AgendamentoError(404, 'Médico não encontrado');
+    medicoId = medico.id;
+
+    if (input.pacienteId) {
+      const paciente = await prisma.paciente.findUnique({ where: { id: input.pacienteId } });
+      if (!paciente) throw new AgendamentoError(404, 'Paciente não encontrado');
+      pacienteId = paciente.id;
+    } else if (input.pacienteNome && input.pacienteTelefone) {
+      pacienteId = await resolverPacienteIdPorNomeTelefone(
+        input.pacienteNome,
+        input.pacienteTelefone,
+      );
+    } else {
+      throw new AgendamentoError(
+        400,
+        'informe pacienteId ou (pacienteNome + pacienteTelefone)',
+      );
+    }
   }
 
   // RN01: impedir sobreposição de horário para o mesmo médico
   const conflito = await prisma.agendamento.findFirst({
     where: {
-      medicoId: input.medicoId,
+      medicoId,
       status: { in: [StatusAgendamento.AGENDADO, StatusAgendamento.CONFIRMADO] },
       periodoInicio: { lt: input.periodoFim },
       periodoFim: { gt: input.periodoInicio },
@@ -87,7 +135,7 @@ export async function createAgendamento(input: CreateAgendamentoInput, solicitan
 
   return prisma.agendamento.create({
     data: {
-      medicoId: input.medicoId,
+      medicoId,
       pacienteId,
       periodoInicio: input.periodoInicio,
       periodoFim: input.periodoFim,

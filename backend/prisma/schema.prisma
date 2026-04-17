@@ -49,13 +49,15 @@ model Medico {
 
 model Paciente {
   id             String    @id @default(uuid())
-  usuarioId      String    @unique @map("usuario_id")
-  telefone       String?
+  usuarioId      String?   @unique @map("usuario_id")
+  nome           String
+  telefone       String
   dataNascimento DateTime? @map("data_nascimento")
 
-  usuario      Usuario        @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuario      Usuario?       @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   agendamentos Agendamento[]
 
+  @@index([telefone])
   @@map("pacientes")
 }
 
@@ -71,7 +73,9 @@ model Agendamento {
   paciente Paciente @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
   medico   Medico   @relation(fields: [medicoId], references: [id], onDelete: Cascade)
 
-  @@unique([medicoId, periodoInicio])
+  // Unicidade por (medicoId, periodoInicio) só em agendamentos ATIVOS — implementada
+  // como índice parcial em SQL (ver migration partial_unique_agendamento_ativo),
+  // já que Prisma não suporta índice único parcial de forma declarativa.
   @@index([pacienteId])
   @@index([medicoId, periodoInicio])
   @@map("agendamentos")

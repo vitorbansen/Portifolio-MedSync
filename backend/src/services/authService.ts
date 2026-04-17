@@ -27,6 +27,10 @@ export async function registerUser(input: RegisterInput) {
       email: input.email,
       senhaHash,
       role,
+      paciente:
+        role === Role.PACIENTE
+          ? { create: { nome: input.nome, telefone: input.telefone! } }
+          : undefined,
     },
     select: {
       id: true,
