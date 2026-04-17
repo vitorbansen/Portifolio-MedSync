@@ -207,7 +207,7 @@ flowchart TB
         UC3["RF02 — Buscar médicos\npor especialidade"]
         UC4["RF03 — Agendar consulta"]
         UC5["RF05 — Visualizar agenda"]
-        UC6["RF06 — Cadastrar médicos"]
+        UC6["RF06 — Cadastrar e excluir biomédicos"]
     end
 
     P -->|"cria conta e faz login"| UC1
@@ -219,8 +219,9 @@ flowchart TB
     M -->|"consulta compromissos"| UC5
 
     ADM -->|"autentica-se"| UC2
-    ADM -->|"gerencia corpo clínico"| UC6
+    ADM -->|"cadastra e exclui biomédicos"| UC6
     ADM -->|"monitora agendas"| UC5
+    ADM -->|"agenda em nome do paciente"| UC4
 
     UC4 -.->|"«include»\nRF04 — Validar\nconflito de horário"| UC3
 
@@ -241,7 +242,7 @@ flowchart TB
 - **RF03 — Agendamento de consultas:** o sistema deve permitir o agendamento de consultas com seleção de data e horário disponíveis.
 - **RF04 — Validação de conflito de horário:** o sistema deve impedir conflitos de horário, validando automaticamente a disponibilidade antes de confirmar qualquer agendamento.
 - **RF05 — Visualização de agenda:** o profissional deve poder visualizar sua agenda de forma organizada e intuitiva, com filtro por data.
-- **RF06 — Cadastro restrito de profissionais:** apenas administradores podem cadastrar novos profissionais no sistema, mantendo o controle sobre o corpo clínico.
+- **RF06 — Gestão restrita de profissionais:** apenas administradores podem cadastrar e excluir biomédicos do sistema, mantendo o controle sobre o corpo clínico.
 
 ---
 
@@ -257,9 +258,13 @@ flowchart TB
 
 ## 2.5 Regras de Negócio
 
-1. **RN01 — Sem agendamento duplicado:** não pode haver agendamento duplicado para o mesmo profissional no mesmo horário, evitando conflitos que prejudicariam tanto o profissional quanto os pacientes.
-2. **RN02 — Cadastro restrito:** apenas usuários com perfil de administrador podem cadastrar novos profissionais no sistema, mantendo a integridade do corpo clínico.
+1. **RN01 — Sem sobreposição de agendamentos:** não pode haver sobreposição de horários para o mesmo profissional. A validação considera qualquer intersecção entre `periodoInicio` e `periodoFim` de agendamentos ativos (AGENDADO ou CONFIRMADO) e rejeita a operação com código 409. Agendamentos adjacentes (fim de um igual ao início do próximo) são permitidos.
+2. **RN02 — Gestão restrita de profissionais:** apenas usuários com perfil de administrador podem cadastrar e excluir biomédicos do sistema, mantendo a integridade do corpo clínico.
 3. **RN03 — Isolamento de dados do paciente:** cada paciente tem acesso exclusivamente aos seus próprios dados e agendamentos, respeitando a privacidade e a segurança da informação.
+4. **RN04 — Responsabilidade pelo agendamento:** o paciente é o responsável principal por criar seus próprios agendamentos. O administrador também pode criar agendamentos em nome de qualquer paciente (caso em que a recepção realiza a marcação por telefone ou presencialmente). O profissional de saúde não cria agendamentos; sua atuação limita-se à visualização da própria agenda e à atualização de status dos agendamentos que recebe.
+5. **RN05 — Ciclo de vida do agendamento:** o agendamento nasce no status `AGENDADO` e segue transições controladas: `AGENDADO → CONFIRMADO`, `AGENDADO → CANCELADO`, `CONFIRMADO → REALIZADO` e `CONFIRMADO → CANCELADO`. Os estados `CANCELADO` e `REALIZADO` são terminais. Tentativas de transição inválida são rejeitadas com código 409.
+6. **RN06 — Autoridade para alterar status:** o paciente pode apenas cancelar os próprios agendamentos. O profissional pode confirmar, marcar como realizado ou cancelar apenas os agendamentos em que figura como médico responsável. O administrador pode executar qualquer transição válida em qualquer agendamento.
+7. **RN07 — Agendamento no futuro:** a data de início do agendamento precisa ser estritamente futura no momento da criação. Tentativas de criar agendamento no passado são rejeitadas com código 400.
 
 ---
 
@@ -531,7 +536,8 @@ erDiagram
         uuid id PK
         uuid paciente_id FK
         uuid medico_id FK
-        timestamp data_hora UK
+        timestamp periodo_inicio UK
+        timestamp periodo_fim
         enum status
         timestamp criado_em
     }
@@ -704,11 +710,11 @@ Implementação do Dashboard do paciente com lista dos próximos agendamentos e 
 
 ### Semana 8 — Frontend — Agenda do Médico e Confirmação
 
-Tela de Agenda do Médico com visualização dos agendamentos do dia/semana, acessível apenas para usuários com role `medico` ou `administrador`. Tela de Confirmação de Agendamento exibida após `POST /agendamentos` bem-sucedido, com dados completos da consulta. Tratamento do retorno `409 Conflict` com exibição de mensagem amigável e sugestão de horários alternativos. Dashboard do Administrador com listagem de todos os médicos cadastrados e acesso ao cadastro de novos profissionais.
+Tela de Agenda do Médico com visualização dos agendamentos do dia/semana, acessível apenas para usuários com role `medico` ou `administrador`. Tela de Confirmação de Agendamento exibida após `POST /agendamentos` bem-sucedido, com dados completos da consulta. Tratamento do retorno `409 Conflict` com exibição de mensagem amigável e sugestão de horários alternativos. Dashboard do Administrador com listagem de todos os biomédicos cadastrados, acesso ao cadastro de novos profissionais e opção de exclusão de biomédicos do sistema.
 
 **Entregável:** Produto funcionalmente completo com todos os casos de uso da seção 2.2 operacionais.
 
-**Requisitos atendidos:** RF05 (visualização de agenda), RF06 (interface de cadastro de médicos), regras de negócio da seção 2.5.
+**Requisitos atendidos:** RF05 (visualização de agenda), RF06 (interface de cadastro e exclusão de biomédicos), regras de negócio da seção 2.5.
 
 ---
 

@@ -12,6 +12,13 @@ enum Role {
   ADMINISTRADOR
 }
 
+enum StatusAgendamento {
+  AGENDADO
+  CONFIRMADO
+  CANCELADO
+  REALIZADO
+}
+
 model Usuario {
   id         String   @id @default(uuid())
   nome       String
@@ -34,7 +41,8 @@ model Medico {
   crm             String   @unique
   horariosAtendimento Json?  @map("horarios_atendimento")
 
-  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuario      Usuario        @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  agendamentos Agendamento[]
 
   @@map("medicos")
 }
@@ -45,7 +53,26 @@ model Paciente {
   telefone       String?
   dataNascimento DateTime? @map("data_nascimento")
 
-  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuario      Usuario        @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  agendamentos Agendamento[]
 
   @@map("pacientes")
+}
+
+model Agendamento {
+  id             String            @id @default(uuid())
+  pacienteId     String            @map("paciente_id")
+  medicoId       String            @map("medico_id")
+  periodoInicio  DateTime          @map("periodo_inicio")
+  periodoFim     DateTime          @map("periodo_fim")
+  status         StatusAgendamento @default(AGENDADO)
+  criadoEm       DateTime          @default(now()) @map("criado_em")
+
+  paciente Paciente @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  medico   Medico   @relation(fields: [medicoId], references: [id], onDelete: Cascade)
+
+  @@unique([medicoId, periodoInicio])
+  @@index([pacienteId])
+  @@index([medicoId, periodoInicio])
+  @@map("agendamentos")
 }

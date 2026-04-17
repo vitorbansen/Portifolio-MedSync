@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
 import { AuthError } from '../services/authService';
+import { MedicoError } from '../services/medicoService';
+import { AgendamentoError } from '../services/agendamentoService';
 
 export function errorHandler(err: unknown, _req: Request, res: Response, _next: NextFunction) {
   if (err instanceof ZodError) {
@@ -10,7 +12,11 @@ export function errorHandler(err: unknown, _req: Request, res: Response, _next: 
     });
   }
 
-  if (err instanceof AuthError) {
+  if (
+    err instanceof AuthError ||
+    err instanceof MedicoError ||
+    err instanceof AgendamentoError
+  ) {
     return res.status(err.status).json({ message: err.message });
   }
 
