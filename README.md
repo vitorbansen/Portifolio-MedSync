@@ -207,7 +207,7 @@ flowchart TB
         UC3["RF02 — Buscar médicos\npor especialidade"]
         UC4["RF03 — Agendar consulta"]
         UC5["RF05 — Visualizar agenda"]
-        UC6["RF06 — Cadastrar e excluir biomédicos"]
+        UC6["RF06 — Cadastrar, editar e excluir biomédicos"]
     end
 
     P -->|"cria conta e faz login"| UC1
@@ -217,9 +217,10 @@ flowchart TB
 
     M -->|"autentica-se"| UC2
     M -->|"consulta compromissos"| UC5
+    M -->|"agenda para si com nome+telefone do paciente"| UC4
 
     ADM -->|"autentica-se"| UC2
-    ADM -->|"cadastra e exclui biomédicos"| UC6
+    ADM -->|"cadastra, edita e exclui biomédicos"| UC6
     ADM -->|"monitora agendas"| UC5
     ADM -->|"agenda em nome do paciente"| UC4
 
@@ -237,12 +238,12 @@ flowchart TB
 
 ## 2.3 Requisitos Funcionais (RF)
 
-- **RF01 — Autenticação de usuários:** o sistema deve permitir o cadastro e login de usuários com autenticação baseada em JWT, garantindo segurança desde o primeiro acesso.
+- **RF01 — Autenticação de usuários:** o sistema deve permitir o cadastro e login de usuários com autenticação baseada em JWT, garantindo segurança desde o primeiro acesso. No cadastro de paciente, o telefone é obrigatório para permitir contato da clínica em caso de alteração ou confirmação de consulta.
 - **RF02 — Busca de profissionais:** o sistema deve possibilitar a busca de profissionais por especialidade, permitindo que o paciente encontre rapidamente o profissional desejado.
 - **RF03 — Agendamento de consultas:** o sistema deve permitir o agendamento de consultas com seleção de data e horário disponíveis.
 - **RF04 — Validação de conflito de horário:** o sistema deve impedir conflitos de horário, validando automaticamente a disponibilidade antes de confirmar qualquer agendamento.
 - **RF05 — Visualização de agenda:** o profissional deve poder visualizar sua agenda de forma organizada e intuitiva, com filtro por data.
-- **RF06 — Gestão restrita de profissionais:** apenas administradores podem cadastrar e excluir biomédicos do sistema, mantendo o controle sobre o corpo clínico.
+- **RF06 — Gestão restrita de profissionais:** apenas administradores podem cadastrar, editar e excluir biomédicos do sistema, mantendo o controle sobre o corpo clínico.
 
 ---
 
@@ -259,9 +260,9 @@ flowchart TB
 ## 2.5 Regras de Negócio
 
 1. **RN01 — Sem sobreposição de agendamentos:** não pode haver sobreposição de horários para o mesmo profissional. A validação considera qualquer intersecção entre `periodoInicio` e `periodoFim` de agendamentos ativos (AGENDADO ou CONFIRMADO) e rejeita a operação com código 409. Agendamentos adjacentes (fim de um igual ao início do próximo) são permitidos.
-2. **RN02 — Gestão restrita de profissionais:** apenas usuários com perfil de administrador podem cadastrar e excluir biomédicos do sistema, mantendo a integridade do corpo clínico.
+2. **RN02 — Gestão restrita de profissionais:** apenas usuários com perfil de administrador podem cadastrar, editar e excluir biomédicos do sistema, mantendo a integridade do corpo clínico.
 3. **RN03 — Isolamento de dados do paciente:** cada paciente tem acesso exclusivamente aos seus próprios dados e agendamentos, respeitando a privacidade e a segurança da informação.
-4. **RN04 — Responsabilidade pelo agendamento:** o paciente é o responsável principal por criar seus próprios agendamentos. O administrador também pode criar agendamentos em nome de qualquer paciente (caso em que a recepção realiza a marcação por telefone ou presencialmente). O profissional de saúde não cria agendamentos; sua atuação limita-se à visualização da própria agenda e à atualização de status dos agendamentos que recebe.
+4. **RN04 — Responsabilidade pelo agendamento:** o paciente é o responsável principal por criar seus próprios agendamentos. O administrador pode criar agendamentos em nome de qualquer paciente. O profissional de saúde pode criar agendamentos somente para a própria agenda, informando nome e telefone do paciente (os agendamentos assim criados são sempre atribuídos ao médico que está autenticado — o sistema ignora qualquer `medicoId` divergente enviado pelo cliente). Quando o telefone informado já existe em um paciente cadastrado, o agendamento é vinculado a esse paciente; caso contrário, é criado um paciente sem login associado (paciente walk-in).
 5. **RN05 — Ciclo de vida do agendamento:** o agendamento nasce no status `AGENDADO` e segue transições controladas: `AGENDADO → CONFIRMADO`, `AGENDADO → CANCELADO`, `CONFIRMADO → REALIZADO` e `CONFIRMADO → CANCELADO`. Os estados `CANCELADO` e `REALIZADO` são terminais. Tentativas de transição inválida são rejeitadas com código 409.
 6. **RN06 — Autoridade para alterar status:** o paciente pode apenas cancelar os próprios agendamentos. O profissional pode confirmar, marcar como realizado ou cancelar apenas os agendamentos em que figura como médico responsável. O administrador pode executar qualquer transição válida em qualquer agendamento.
 7. **RN07 — Agendamento no futuro:** a data de início do agendamento precisa ser estritamente futura no momento da criação. Tentativas de criar agendamento no passado são rejeitadas com código 400.
@@ -327,6 +328,8 @@ flowchart TD
 ## 3.2 Fluxos Alternativos
 
 O sistema também contempla cenários alternativos que podem ocorrer durante a navegação. Em caso de erro de login, como senha incorreta ou usuário não encontrado, o sistema exibe uma mensagem clara orientando o usuário sobre como proceder. Quando o paciente tenta agendar um horário que já foi reservado por outro paciente enquanto ele navegava, o sistema informa a indisponibilidade e sugere horários alternativos próximos. Em situações de falha de integração com APIs externas, o sistema exibe mensagens amigáveis e, quando possível, utiliza dados em cache para manter a continuidade da operação.
+
+Existe também o fluxo de agendamento iniciado pelo médico, que cobre o caso em que o paciente ligou para a clínica ou chegou sem marcar. Após autenticado, o médico acessa o próprio dashboard, informa nome e telefone do paciente, data, hora e duração, e o sistema cria o agendamento na sua agenda. Se o telefone já pertence a um paciente cadastrado, o sistema reutiliza o registro existente; caso contrário, cria um paciente walk-in (sem login). A mesma validação de sobreposição da RN01 é aplicada, garantindo que o fluxo manual não introduza conflitos.
 
 ---
 
@@ -497,14 +500,14 @@ graph TB
 
 ## 5.2 Modelo de Dados
 
-O modelo de dados do MedSync foi projetado como um esquema relacional normalizado que reflete diretamente as regras de negócio da aplicação. A entidade central é o Agendamento, que relaciona um Paciente a um Médico em uma data e horário específicos. A entidade Usuário armazena os dados de autenticação e perfil, com um campo de role que distingue pacientes, médicos e administradores. A entidade Médico contém informações profissionais como especialidade e horários de atendimento. A entidade Agendamento possui constraints de unicidade que impedem duplicação de horário para o mesmo médico, implementando a regra de negócio diretamente no nível do banco de dados.
+O modelo de dados do MedSync foi projetado como um esquema relacional normalizado que reflete diretamente as regras de negócio da aplicação. A entidade central é o Agendamento, que relaciona um Paciente a um Médico em uma data e horário específicos. A entidade Usuário armazena os dados de autenticação e perfil, com um campo de role que distingue pacientes, médicos e administradores. A entidade Médico contém informações profissionais como especialidade e horários de atendimento. A entidade Paciente mantém nome e telefone próprios (independentes da entidade Usuário) para suportar o cenário de agendamento walk-in, em que o médico cria a consulta para alguém que não tem conta no sistema — nesse caso `usuario_id` fica nulo. A entidade Agendamento possui um índice único parcial que impede duplicação de horário para o mesmo médico **apenas enquanto o agendamento está ativo** (status `AGENDADO` ou `CONFIRMADO`), implementando a regra de negócio diretamente no nível do banco de dados sem bloquear a reagenda após um cancelamento.
 
 O diagrama entidade-relacionamento (DER) a seguir detalha o modelo relacional:
 
 ```mermaid
 erDiagram
     USUARIO ||--o| MEDICO : "e um"
-    USUARIO ||--o| PACIENTE : "e um"
+    USUARIO |o--o| PACIENTE : "pode ser"
     MEDICO ||--o{ AGENDAMENTO : "recebe"
     PACIENTE ||--o{ AGENDAMENTO : "realiza"
 
@@ -527,7 +530,8 @@ erDiagram
 
     PACIENTE {
         uuid id PK
-        uuid usuario_id FK
+        uuid usuario_id FK "opcional — paciente walk-in não tem login"
+        string nome
         string telefone
         date data_nascimento
     }
@@ -536,7 +540,7 @@ erDiagram
         uuid id PK
         uuid paciente_id FK
         uuid medico_id FK
-        timestamp periodo_inicio UK
+        timestamp periodo_inicio "UK parcial com medico_id quando status in (AGENDADO, CONFIRMADO)"
         timestamp periodo_fim
         enum status
         timestamp criado_em
@@ -686,15 +690,15 @@ Com a base segura e o ambiente estável, esta fase concentra-se em construir os 
 
 ### Semana 5 — Backend — Módulo de Médicos (RF02, RF06)
 
-Implementação dos endpoints de gerenciamento de médicos. Rota `POST /medicos` restrita ao perfil `administrador` (RF06) para cadastro de novos profissionais com validação do CRM. Rota `GET /medicos?especialidade=X` para busca por especialidade (RF02), retornando lista paginada com nome, especialidade e horários disponíveis. Rota `GET /medicos/:id` para detalhes de um profissional específico. Todos os endpoints de leitura preparados para receber a camada de cache que será adicionada na Fase 3.
+Implementação dos endpoints de gerenciamento de médicos. Rotas `POST /medicos`, `PATCH /medicos/:id` e `DELETE /medicos/:id` restritas ao perfil `administrador` (RF06) para cadastro, edição e exclusão de profissionais com validação de CRM e e-mail únicos. Rota `GET /medicos?especialidade=X` para busca por especialidade (RF02), retornando lista paginada com nome, especialidade e horários disponíveis. Rota `GET /medicos/:id` para detalhes de um profissional específico. Todos os endpoints de leitura preparados para receber a camada de cache que será adicionada na Fase 3.
 
 **Entregável:** API de médicos documentada e testável, com controle de acesso por role funcionando.
 
-**Requisitos atendidos:** RF02 (busca por especialidade), RF06 (cadastro restrito ao administrador).
+**Requisitos atendidos:** RF02 (busca por especialidade), RF06 (cadastro, edição e exclusão restritos ao administrador).
 
 ### Semana 6 — Backend — Módulo de Agendamentos (RF03, RF04, RF05)
 
-Implementação dos endpoints de agendamento. Rota `POST /agendamentos` que valida a disponibilidade do médico na data/hora solicitada, aplica a constraint `UNIQUE (medico_id, data_hora)` do banco para prevenir conflitos em condições de concorrência (RF04) e retorna `201 Created` ou `409 Conflict`. Rota `GET /agendamentos/medico/:id` para o médico visualizar sua agenda filtrada por data (RF05). Rota `GET /agendamentos/paciente` para o paciente acessar seus próprios agendamentos. Rota `PATCH /agendamentos/:id/cancelar` para cancelamento com atualização de status. Implementação da transação de banco de dados no fluxo de criação para garantir atomicidade.
+Implementação dos endpoints de agendamento. Rota `POST /agendamentos` que valida a sobreposição do horário com outros agendamentos ativos do médico e aplica um índice único parcial `UNIQUE (medico_id, periodo_inicio) WHERE status IN ('AGENDADO', 'CONFIRMADO')` como rede de segurança contra corridas concorrentes (RF04), retornando `201 Created` ou `409 Conflict`. Rota `GET /agendamentos` com filtros por status, data e, para admin, por médico/paciente (RF05). Rota `PATCH /agendamentos/:id/status` para transições de status controladas pela RN05. Rota `GET /medicos/:id/slots-ocupados` devolve somente os intervalos bloqueados (sem dados do paciente) para alimentar a tela de seleção de horário respeitando a RN03.
 
 **Entregável:** Módulo de agendamentos completo com validação de conflitos testada em cenários concorrentes.
 
@@ -702,7 +706,7 @@ Implementação dos endpoints de agendamento. Rota `POST /agendamentos` que vali
 
 ### Semana 7 — Frontend — Dashboard e Busca de Médicos
 
-Implementação do Dashboard do paciente com lista dos próximos agendamentos e acesso rápido à busca. Tela de Busca de Médicos com campo de filtro por especialidade, exibição dos resultados em cards responsivos com nome, especialidade e botão de agendamento. Integração com o endpoint `GET /medicos?especialidade=X`. Tela de Seleção de Horário com exibição dos slots disponíveis do médico selecionado em formato de calendário. Tratamento de estados de carregamento (skeleton), erro e lista vazia em todas as telas.
+Implementação do Dashboard com lista dos próximos agendamentos e histórico, consciente da role do usuário: o paciente vê os médicos das suas consultas e um atalho para a busca; o médico vê um formulário rápido para agendar na própria agenda (nome + telefone do paciente) e as próximas consultas exibem o paciente em vez do próprio nome. Tela de Busca de Médicos com filtro por especialidade/nome, resultados em cards responsivos. Tela de Seleção de Horário que gera slots de 30 min a partir dos horários de atendimento do médico e remove da visualização os horários ocupados consultados via `GET /medicos/:id/slots-ocupados`. Tratamento de carregamento (skeleton), erro e lista vazia em todas as telas.
 
 **Entregável:** Fluxo de busca e seleção de horário funcional no navegador, integrando frontend e backend.
 
@@ -710,11 +714,11 @@ Implementação do Dashboard do paciente com lista dos próximos agendamentos e 
 
 ### Semana 8 — Frontend — Agenda do Médico e Confirmação
 
-Tela de Agenda do Médico com visualização dos agendamentos do dia/semana, acessível apenas para usuários com role `medico` ou `administrador`. Tela de Confirmação de Agendamento exibida após `POST /agendamentos` bem-sucedido, com dados completos da consulta. Tratamento do retorno `409 Conflict` com exibição de mensagem amigável e sugestão de horários alternativos. Dashboard do Administrador com listagem de todos os biomédicos cadastrados, acesso ao cadastro de novos profissionais e opção de exclusão de biomédicos do sistema.
+Tela de Agenda do Médico com visualização dos agendamentos do dia/semana, acessível apenas para usuários com role `medico` ou `administrador`. Tela de Confirmação de Agendamento exibida após `POST /agendamentos` bem-sucedido, com dados completos da consulta. Tratamento do retorno `409 Conflict` com exibição de mensagem amigável e sugestão de horários alternativos. Dashboard do Administrador com listagem de todos os biomédicos cadastrados, formulário de cadastro, tela dedicada de edição (atualização de dados pessoais, CRM, especialidade e horários de atendimento) e opção de exclusão de biomédicos do sistema.
 
 **Entregável:** Produto funcionalmente completo com todos os casos de uso da seção 2.2 operacionais.
 
-**Requisitos atendidos:** RF05 (visualização de agenda), RF06 (interface de cadastro e exclusão de biomédicos), regras de negócio da seção 2.5.
+**Requisitos atendidos:** RF05 (visualização de agenda), RF06 (interface de cadastro, edição e exclusão de biomédicos), regras de negócio da seção 2.5.
 
 ---
 
@@ -730,6 +734,17 @@ Implementação da camada de cache em Redis para os endpoints de alta frequênci
 
 **Requisitos atendidos:** RNF02 (tempo de resposta < 200ms), KPI de performance da seção 1.6.
 
+#### Resultados do benchmark
+
+Medições do endpoint `GET /medicos` com `autocannon` (20 conexões concorrentes, 15 segundos de duração) contra o backend local, populado com 202 médicos via `npm run seed:bench`.
+
+| Cenário | p50 (ms) | p99 (ms) | Média (ms) | Req/s |
+|---|---|---|---|---|
+| Sem cache (202 médicos) | 117 | 191 | 118 | 168 |
+| Com cache aquecido (202 médicos) | 97 | 193 | 99 | 200 |
+
+Com o cache aquecido há ganho de ~17% na latência mediana e ~19% na vazão; o p99 permanece abaixo do alvo de 200ms em ambos os cenários, atendendo RNF02. O ganho observado é modesto porque o payload inclui `join` com `usuario` e totaliza ~92KB — grande parte do tempo é gasto em serialização e transporte, não na consulta. O benefício cresce em cenários com mais concorrência ou consultas mais caras. Em cargas muito pequenas (poucos registros), o overhead do round-trip ao Redis supera o custo da consulta direta ao PostgreSQL, portanto o cache é mais indicado para listagens volumosas e filtros frequentes.
+
 ### Semana 10 — Testes Automatizados — Backend
 
 Implementação da suíte de testes do backend com Jest e Supertest. Testes unitários para os Services (lógica de negócio): validação de conflito de horário, geração e verificação de JWT, regras de RBAC. Testes de integração para os Controllers: fluxo completo de registro → login → agendamento → conflito. Configuração do banco de dados de teste isolado via Docker. Integração dos testes no pipeline do GitHub Actions com geração de relatório de cobertura. Meta: atingir 75% de cobertura no backend.
@@ -737,6 +752,25 @@ Implementação da suíte de testes do backend com Jest e Supertest. Testes unit
 **Entregável:** Suíte de testes do backend no CI/CD com relatório de cobertura ≥ 75%.
 
 **Requisitos atendidos:** KPI de cobertura de testes da seção 1.6.
+
+#### Cobertura obtida
+
+Executando `npm run test:coverage` no `backend/` contra um Postgres isolado (`medsync_test`), a suíte reúne 41 testes distribuídos em cinco arquivos:
+
+- `tests/unit/jwt.test.ts` — emissão, verificação e expiração do token.
+- `tests/integration/authService.test.ts` — registro, login, credenciais inválidas e e-mail duplicado.
+- `tests/integration/agendamentoService.test.ts` — conflito de horário (RN01), walk-in do médico, transições de status (RN05) e validação de data no passado.
+- `tests/integration/medicoService.test.ts` — CRUD, filtros case-insensitive, deleção em cascata e janelas ocupadas.
+- `tests/integration/api.test.ts` — golden path ponta-a-ponta com Supertest: registro → login → busca → agendamento → conflito 409, além de RBAC (401/403) e edição/exclusão pelo administrador.
+
+| Métrica | Resultado |
+|---|---|
+| Statements | 83,37% |
+| Branches | 61,20% |
+| Functions | 95,74% |
+| Lines | 87,82% |
+
+A meta de ≥75% é superada em statements, functions e lines. O relatório HTML completo fica em `backend/coverage/` após a execução.
 
 ### Semana 11 — Testes Frontend e Testes E2E
 
@@ -746,6 +780,23 @@ Implementação de testes de componentes com React Testing Library para os formu
 
 **Requisitos atendidos:** RNF01 (responsividade validada), KPI de cobertura de testes da seção 1.6.
 
+#### Testes de componente com React Testing Library
+
+Configurados com o preset `next/jest` e ambiente `jsdom`, cobrem os formulários críticos:
+
+- `frontend/src/app/login/page.test.tsx` — renderização dos campos, submit bem-sucedido (token salvo + redirect para `/dashboard`) e mensagem de erro quando a API rejeita as credenciais.
+- `frontend/src/app/register/page.test.tsx` — renderização dos quatro campos, payload enviado à API com telefone incluso e tratamento de e-mail duplicado.
+
+Execução: `cd frontend && npm run test`. Seis testes em duas suítes, todos verdes.
+
+#### Testes E2E com Playwright
+
+Suíte em `frontend/e2e/` configurada em `playwright.config.ts`, com `webServer` subindo o Next.js em porta dedicada (`E2E_PORT=3100` por padrão) apontando para o backend em `http://localhost:3333/api`.
+
+- `e2e/golden-path.spec.ts` exercita **cadastro → login → busca → seleção de horário → confirmação** em um único teste e um caso negativo para login com credenciais inválidas.
+
+Pré-requisitos antes de rodar: `docker-compose up postgres redis` + `npm run prisma:seed` no backend, `npm run test:e2e:install` (baixa o Chromium) e `npm run dev` no backend na porta 3333. Execução: `cd frontend && npm run test:e2e`.
+
 ### Semana 12 — Segurança, LGPD e Deploy Final
 
 Revisão de segurança com validação de todos os inputs da API contra injeção SQL e XSS. Implementação da funcionalidade de exclusão de conta do usuário (direito ao esquecimento, LGPD). Configuração de rate limiting nos endpoints de autenticação para prevenir ataques de força bruta. Revisão dos headers HTTP de segurança (CORS, Content-Security-Policy, HSTS). Preparação do ambiente de produção com variáveis de ambiente seguras e Docker configurado sem volumes de desenvolvimento. Deploy final, smoke tests em produção e validação dos três KPIs definidos na seção 1.6.
@@ -753,6 +804,21 @@ Revisão de segurança com validação de todos os inputs da API contra injeçã
 **Entregável:** Sistema em produção com todos os KPIs validados, conformidade com LGPD verificada.
 
 **Requisitos atendidos:** RNF04 (segurança de senhas), seção 6.1 (LGPD), todos os RNFs verificados em produção.
+
+#### Medidas de segurança aplicadas
+
+- **Validação de entrada** via Zod em todos os controllers, blindando contra payloads malformados; Prisma elimina a classe de SQL injection em todas as queries.
+- **Rate limiting** em `POST /api/auth/register` e `POST /api/auth/login` (10 requisições por 15 min por IP) via `express-rate-limit`, mitigando força bruta e enumeração de e-mails.
+- **Headers de segurança** reforçados com Helmet: CSP restritiva (`defaultSrc 'self'`, `objectSrc 'none'`, `frameAncestors 'none'`), `Referrer-Policy: no-referrer`, `Cross-Origin-Resource-Policy: same-site`, HSTS ativo em produção. `x-powered-by` desabilitado e `express.json` limitado a 100 KB.
+- **Senhas** armazenadas exclusivamente como hash bcrypt (`BCRYPT_ROUNDS = 10`); o JWT carrega apenas `sub`, `email` e `role`.
+
+#### LGPD — Termos de Uso e direito ao esquecimento
+
+- Página pública em `frontend/src/app/termos/page.tsx` descrevendo os dados tratados, as finalidades, o compartilhamento com o profissional de saúde e os direitos do titular (art. 18 da LGPD).
+- Checkbox obrigatório na tela de cadastro (`/register`): o botão "Cadastrar" permanece desabilitado até o aceite explícito dos Termos.
+- Endpoint `DELETE /api/auth/me` remove o `Usuario` autenticado e, via cascata Prisma (`onDelete: Cascade`), todos os dados de `Paciente` e `Medico` associados. A interface expõe o botão "Excluir minha conta" dentro da página de perfil (`/perfil`), acessada por um atalho discreto no cabeçalho do dashboard, com confirmação via `window.confirm`.
+- Endpoint `PATCH /api/auth/me` permite ao usuário autenticado atualizar nome/e-mail e — para pacientes — o telefone do próprio cadastro, atendendo ao direito de correção (art. 18, III, da LGPD). A tela `/perfil` reúne os campos editáveis e o botão de exclusão.
+- Cobertura de regressão: testes de integração em `backend/tests/integration/api.test.ts` garantem 204 no `DELETE /auth/me` com login subsequente retornando 401, além de 200 no `PATCH /auth/me` com atualização efetiva e 409 para colisão de e-mail.
 
 ---
 

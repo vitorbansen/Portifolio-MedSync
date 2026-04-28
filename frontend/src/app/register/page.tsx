@@ -10,16 +10,22 @@ export default function RegisterPage() {
   const router = useRouter();
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
+  const [telefone, setTelefone] = useState('');
   const [senha, setSenha] = useState('');
+  const [aceitouTermos, setAceitouTermos] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(false);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!aceitouTermos) {
+      setErro('É necessário aceitar os Termos de Uso para se cadastrar.');
+      return;
+    }
     setErro(null);
     setCarregando(true);
     try {
-      const { token } = await register({ nome, email, senha });
+      const { token } = await register({ nome, email, senha, telefone });
       saveToken(token);
       router.push('/dashboard');
     } catch (err) {
@@ -66,6 +72,20 @@ export default function RegisterPage() {
             />
           </div>
           <div>
+            <label htmlFor="telefone" className="mb-1 block text-sm font-medium text-slate-700">
+              Telefone
+            </label>
+            <input
+              id="telefone"
+              type="tel"
+              required
+              placeholder="(47) 99999-0000"
+              value={telefone}
+              onChange={(e) => setTelefone(e.target.value)}
+              className="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-brand focus:outline-none"
+            />
+          </div>
+          <div>
             <label htmlFor="senha" className="mb-1 block text-sm font-medium text-slate-700">
               Senha
             </label>
@@ -81,13 +101,34 @@ export default function RegisterPage() {
             <p className="mt-1 text-xs text-slate-500">Mínimo de 8 caracteres.</p>
           </div>
 
+          <div className="flex items-start gap-2">
+            <input
+              id="aceitar-termos"
+              type="checkbox"
+              checked={aceitouTermos}
+              onChange={(e) => setAceitouTermos(e.target.checked)}
+              className="mt-1 h-4 w-4 rounded border-slate-300 text-brand focus:ring-brand"
+            />
+            <label htmlFor="aceitar-termos" className="text-sm text-slate-600">
+              Li e concordo com os{' '}
+              <Link
+                href="/termos"
+                target="_blank"
+                className="font-semibold text-brand-dark hover:underline"
+              >
+                Termos de Uso e a Política de Privacidade
+              </Link>
+              .
+            </label>
+          </div>
+
           {erro && (
             <div className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{erro}</div>
           )}
 
           <button
             type="submit"
-            disabled={carregando}
+            disabled={carregando || !aceitouTermos}
             className="w-full rounded-lg bg-brand py-2.5 font-semibold text-white shadow transition hover:bg-brand-dark disabled:opacity-60"
           >
             {carregando ? 'Cadastrando…' : 'Cadastrar'}

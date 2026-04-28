@@ -8,9 +8,30 @@ import { errorHandler } from './middlewares/errorHandler';
 
 export const app = express();
 
-app.use(helmet());
+const isProd = env.NODE_ENV === 'production';
+
+app.disable('x-powered-by');
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:'],
+        connectSrc: ["'self'", env.CORS_ORIGIN],
+        objectSrc: ["'none'"],
+        frameAncestors: ["'none'"],
+      },
+    },
+    crossOriginResourcePolicy: { policy: 'same-site' },
+    referrerPolicy: { policy: 'no-referrer' },
+    hsts: isProd ? { maxAge: 31536000, includeSubDomains: true, preload: false } : false,
+  }),
+);
 app.use(cors({ origin: env.CORS_ORIGIN, credentials: true }));
-app.use(express.json());
+app.use(express.json({ limit: '100kb' }));
 app.use(morgan(env.NODE_ENV === 'development' ? 'dev' : 'combined'));
 
 app.use('/api', router);

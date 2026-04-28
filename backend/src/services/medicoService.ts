@@ -1,11 +1,25 @@
 import bcrypt from 'bcrypt';
 import { Prisma, Role, StatusAgendamento } from '@prisma/client';
 import { prisma } from '../lib/prisma';
+import { cacheDeleteByPrefix, withCache } from '../lib/redis';
+import { env } from '../lib/env';
 import {
   CreateMedicoInput,
   ListMedicosQuery,
   UpdateMedicoInput,
 } from '../schemas/medicoSchemas';
+
+const CACHE_PREFIX_MEDICOS = 'medicos:';
+
+function keyListMedicos(query: ListMedicosQuery): string {
+  const nome = query.nome?.toLowerCase() ?? '';
+  const esp = query.especialidade?.toLowerCase() ?? '';
+  return `${CACHE_PREFIX_MEDICOS}list:${esp}|${nome}`;
+}
+
+async function invalidarCacheMedicos() {
+  await cacheDeleteByPrefix(CACHE_PREFIX_MEDICOS);
+}
 
 const BCRYPT_ROUNDS = 10;
 
@@ -55,22 +69,25 @@ export async function createMedico(input: CreateMedicoInput) {
     select: medicoSelect,
   });
 
+  await invalidarCacheMedicos();
   return medico;
 }
 
 export async function listMedicos(query: ListMedicosQuery) {
-  return prisma.medico.findMany({
-    where: {
-      especialidade: query.especialidade
-        ? { contains: query.especialidade, mode: 'insensitive' }
-        : undefined,
-      usuario: query.nome
-        ? { nome: { contains: query.nome, mode: 'insensitive' } }
-        : undefined,
-    },
-    orderBy: { usuario: { nome: 'asc' } },
-    select: medicoSelect,
-  });
+  return withCache(keyListMedicos(query), env.CACHE_TTL_MEDICOS, () =>
+    prisma.medico.findMany({
+      where: {
+        especialidade: query.especialidade
+          ? { contains: query.especialidade, mode: 'insensitive' }
+          : undefined,
+        usuario: query.nome
+          ? { nome: { contains: query.nome, mode: 'insensitive' } }
+          : undefined,
+      },
+      orderBy: { usuario: { nome: 'asc' } },
+      select: medicoSelect,
+    }),
+  );
 }
 
 export async function updateMedico(id: string, input: UpdateMedicoInput) {
@@ -98,7 +115,7 @@ export async function updateMedico(id: string, input: UpdateMedicoInput) {
 
   const atualizaUsuario = input.nome !== undefined || input.email !== undefined;
 
-  return prisma.medico.update({
+  const atualizado = await prisma.medico.update({
     where: { id },
     data: {
       crm: input.crm,
@@ -113,6 +130,9 @@ export async function updateMedico(id: string, input: UpdateMedicoInput) {
     },
     select: medicoSelect,
   });
+
+  await invalidarCacheMedicos();
+  return atualizado;
 }
 
 export async function deleteMedico(id: string) {
@@ -122,6 +142,7 @@ export async function deleteMedico(id: string) {
   }
 
   await prisma.usuario.delete({ where: { id: medico.usuarioId } });
+  await invalidarCacheMedicos();
 }
 
 export async function listSlotsOcupados(medicoId: string) {

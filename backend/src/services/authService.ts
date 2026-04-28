@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { Role } from '@prisma/client';
 import { prisma } from '../lib/prisma';
 import { signToken } from '../lib/jwt';
-import { RegisterInput, LoginInput } from '../schemas/authSchemas';
+import { RegisterInput, LoginInput, UpdateMeInput } from '../schemas/authSchemas';
 
 const BCRYPT_ROUNDS = 10;
 
@@ -71,8 +71,66 @@ export async function loginUser(input: LoginInput) {
 }
 
 export async function getUsuarioById(id: string) {
-  return prisma.usuario.findUnique({
+  const usuario = await prisma.usuario.findUnique({
     where: { id },
-    select: { id: true, nome: true, email: true, role: true, criadoEm: true },
+    select: {
+      id: true,
+      nome: true,
+      email: true,
+      role: true,
+      criadoEm: true,
+      paciente: { select: { telefone: true } },
+    },
   });
+  if (!usuario) return null;
+  const { paciente, ...rest } = usuario;
+  return { ...rest, telefone: paciente?.telefone ?? null };
+}
+
+export async function updateUsuario(id: string, input: UpdateMeInput) {
+  const usuario = await prisma.usuario.findUnique({
+    where: { id },
+    include: { paciente: true },
+  });
+  if (!usuario) {
+    throw new AuthError(404, 'Usuário não encontrado');
+  }
+
+  if (input.email && input.email !== usuario.email) {
+    const emailJaUsado = await prisma.usuario.findUnique({ where: { email: input.email } });
+    if (emailJaUsado) {
+      throw new AuthError(409, 'E-mail já cadastrado');
+    }
+  }
+
+  if (input.telefone && usuario.role !== Role.PACIENTE) {
+    throw new AuthError(400, 'Telefone só pode ser atualizado por pacientes');
+  }
+
+  await prisma.usuario.update({
+    where: { id },
+    data: {
+      nome: input.nome,
+      email: input.email,
+      paciente:
+        usuario.role === Role.PACIENTE && (input.telefone || input.nome)
+          ? {
+              update: {
+                telefone: input.telefone,
+                nome: input.nome,
+              },
+            }
+          : undefined,
+    },
+  });
+
+  return getUsuarioById(id);
+}
+
+export async function deleteUsuario(id: string) {
+  const usuario = await prisma.usuario.findUnique({ where: { id } });
+  if (!usuario) {
+    throw new AuthError(404, 'Usuário não encontrado');
+  }
+  await prisma.usuario.delete({ where: { id } });
 }

@@ -8,6 +8,12 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(16, 'JWT_SECRET deve ter pelo menos 16 caracteres'),
   JWT_EXPIRES_IN: z.string().default('1d'),
   CORS_ORIGIN: z.string().default('http://localhost:3000'),
+  REDIS_URL: z
+    .string()
+    .optional()
+    .transform((v) => (v && v.length > 0 ? v : undefined))
+    .pipe(z.string().url().optional()),
+  CACHE_TTL_MEDICOS: z.coerce.number().default(60),
 });
 
 const parsed = envSchema.safeParse(process.env);
