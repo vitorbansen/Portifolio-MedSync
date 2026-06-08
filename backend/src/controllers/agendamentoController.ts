@@ -3,11 +3,13 @@ import {
   agendamentoIdParamSchema,
   createAgendamentoSchema,
   listAgendamentosSchema,
+  reagendarSchema,
   updateStatusSchema,
 } from '../schemas/agendamentoSchemas';
 import {
   createAgendamento as createService,
   listAgendamentos as listService,
+  reagendarAgendamento as reagendarService,
   updateAgendamentoStatus as updateStatusService,
 } from '../services/agendamentoService';
 
@@ -27,6 +29,21 @@ export async function list(req: Request, res: Response, next: NextFunction) {
     if (!req.usuario) return res.status(401).json({ message: 'Não autenticado' });
     const query = listAgendamentosSchema.parse(req.query);
     const result = await listService(query, { sub: req.usuario.sub, role: req.usuario.role });
+    return res.json(result);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+export async function reagendar(req: Request, res: Response, next: NextFunction) {
+  try {
+    if (!req.usuario) return res.status(401).json({ message: 'Não autenticado' });
+    const { id } = agendamentoIdParamSchema.parse(req.params);
+    const data = reagendarSchema.parse(req.body);
+    const result = await reagendarService(id, data, {
+      sub: req.usuario.sub,
+      role: req.usuario.role,
+    });
     return res.json(result);
   } catch (err) {
     return next(err);

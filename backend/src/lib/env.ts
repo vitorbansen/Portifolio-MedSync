@@ -14,6 +14,9 @@ const envSchema = z.object({
     .transform((v) => (v && v.length > 0 ? v : undefined))
     .pipe(z.string().url().optional()),
   CACHE_TTL_MEDICOS: z.coerce.number().default(60),
+  ZAPI_INSTANCE_ID: z.string().optional(),
+  ZAPI_TOKEN: z.string().optional(),
+  ZAPI_CLIENT_TOKEN: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

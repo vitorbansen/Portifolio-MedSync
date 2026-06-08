@@ -6,6 +6,8 @@ import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { listMedicos, Medico } from '@/lib/api';
 import { clearToken, getToken } from '@/lib/auth';
 import { DIAS_SEMANA_LABEL } from '@/lib/format';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 export default function BuscaMedicosPage() {
   const router = useRouter();
@@ -61,15 +63,13 @@ export default function BuscaMedicosPage() {
   }
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-10">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <Link href="/dashboard" className="text-sm text-slate-500 hover:text-slate-700">
-            ← Voltar ao dashboard
-          </Link>
-          <h1 className="mt-1 text-3xl font-bold text-slate-900">Buscar médicos</h1>
+    <div className="flex min-h-screen flex-col bg-slate-50">
+      <Header />
+      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-10">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-slate-900">Buscar médicos</h1>
+          <p className="mt-1 text-sm text-slate-500">Encontre um profissional e agende sua consulta.</p>
         </div>
-      </div>
 
       <form
         onSubmit={aoSubmeter}
@@ -121,7 +121,9 @@ export default function BuscaMedicosPage() {
           {medicos?.map((m) => <MedicoCard key={m.id} medico={m} />)}
         </div>
       )}
-    </main>
+      </main>
+      <Footer />
+    </div>
   );
 }
 

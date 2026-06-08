@@ -13,6 +13,8 @@ import {
 import { clearToken, getToken } from '@/lib/auth';
 import { formatData, formatHora } from '@/lib/format';
 import { gerarProximosDias, Slot } from '@/lib/slots';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 export default function AgendarPage() {
   const router = useRouter();
@@ -97,37 +99,47 @@ export default function AgendarPage() {
 
   if (!medico && !erro) {
     return (
-      <main className="mx-auto max-w-3xl px-6 py-10">
-        <div className="h-32 animate-pulse rounded-xl bg-slate-100" />
-      </main>
+      <div className="flex min-h-screen flex-col bg-slate-50">
+        <Header />
+        <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
+          <div className="h-32 animate-pulse rounded-xl bg-slate-100" />
+        </main>
+        <Footer />
+      </div>
     );
   }
 
   if (sucessoId) {
     return (
-      <main className="mx-auto max-w-xl px-6 py-20 text-center">
-        <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-2xl text-emerald-700">
-          ✓
-        </div>
-        <h1 className="mb-2 text-2xl font-bold text-slate-900">Agendamento confirmado</h1>
-        {slotSelecionado && (
-          <p className="mb-6 text-slate-600">
-            {medico?.usuario.nome} · {formatData(slotSelecionado.inicio.toISOString())} às{' '}
-            {formatHora(slotSelecionado.inicio.toISOString())}
-          </p>
-        )}
-        <Link
-          href="/dashboard"
-          className="inline-block rounded-lg bg-emerald-600 px-5 py-3 text-sm font-semibold text-white hover:bg-emerald-700"
-        >
-          Ver meus agendamentos
-        </Link>
-      </main>
+      <div className="flex min-h-screen flex-col bg-slate-50">
+        <Header />
+        <main className="mx-auto w-full max-w-xl flex-1 px-6 py-20 text-center">
+          <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-2xl text-emerald-700">
+            ✓
+          </div>
+          <h1 className="mb-2 text-2xl font-bold text-slate-900">Agendamento confirmado</h1>
+          {slotSelecionado && (
+            <p className="mb-6 text-slate-600">
+              {medico?.usuario.nome} · {formatData(slotSelecionado.inicio.toISOString())} às{' '}
+              {formatHora(slotSelecionado.inicio.toISOString())}
+            </p>
+          )}
+          <Link
+            href="/dashboard"
+            className="inline-block rounded-lg bg-emerald-600 px-5 py-3 text-sm font-semibold text-white hover:bg-emerald-700"
+          >
+            Ver meus agendamentos
+          </Link>
+        </main>
+        <Footer />
+      </div>
     );
   }
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-10">
+    <div className="flex min-h-screen flex-col bg-slate-50">
+      <Header />
+      <main className="mx-auto w-full max-w-4xl flex-1 px-6 py-10">
       <Link href="/medicos" className="text-sm text-slate-500 hover:text-slate-700">
         ← Voltar à busca
       </Link>
@@ -210,6 +222,8 @@ export default function AgendarPage() {
           </button>
         </div>
       )}
-    </main>
+      </main>
+      <Footer />
+    </div>
   );
 }

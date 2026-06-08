@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { deleteMinhaConta, fetchMe, updateMe, Usuario } from '@/lib/api';
 import { clearToken, getToken } from '@/lib/auth';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 export default function PerfilPage() {
   const router = useRouter();
@@ -93,29 +95,27 @@ export default function PerfilPage() {
 
   if (!usuario) {
     return (
-      <main className="mx-auto max-w-2xl px-6 py-10">
-        <div className="h-8 w-48 animate-pulse rounded bg-slate-200" />
-        <div className="mt-6 h-64 animate-pulse rounded-xl bg-slate-100" />
-      </main>
+      <div className="flex min-h-screen flex-col bg-slate-50">
+        <Header />
+        <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-10">
+          <div className="h-8 w-48 animate-pulse rounded bg-slate-200" />
+          <div className="mt-6 h-64 animate-pulse rounded-xl bg-slate-100" />
+        </main>
+        <Footer />
+      </div>
     );
   }
 
   const isPaciente = usuario.role === 'PACIENTE';
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-10">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
+    <div className="flex min-h-screen flex-col bg-slate-50">
+      <Header />
+      <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-10">
+        <div className="mb-6">
           <h1 className="text-2xl font-bold text-slate-900">Meu perfil</h1>
           <p className="text-sm text-slate-500">Perfil: {usuario.role}</p>
         </div>
-        <Link
-          href="/dashboard"
-          className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
-        >
-          Voltar
-        </Link>
-      </div>
 
       <form
         onSubmit={onSubmit}
@@ -173,19 +173,21 @@ export default function PerfilPage() {
         </button>
       </form>
 
-      <section className="mt-10 rounded-lg border border-slate-200 bg-white p-5">
-        <h2 className="text-sm font-semibold text-slate-800">Excluir minha conta</h2>
-        <p className="mt-1 text-sm text-slate-500">
-          Exerça o direito ao esquecimento previsto na LGPD. Esta ação remove sua conta e os
-          dados pessoais associados e não pode ser desfeita.
-        </p>
-        <button
-          onClick={excluirConta}
-          className="mt-3 rounded-md border border-red-300 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50"
-        >
-          Excluir minha conta
-        </button>
-      </section>
-    </main>
+        <section className="mt-10 rounded-lg border border-slate-200 bg-white p-5">
+          <h2 className="text-sm font-semibold text-slate-800">Excluir minha conta</h2>
+          <p className="mt-1 text-sm text-slate-500">
+            Exerça o direito ao esquecimento previsto na LGPD. Esta ação remove sua conta e os
+            dados pessoais associados e não pode ser desfeita.
+          </p>
+          <button
+            onClick={excluirConta}
+            className="mt-3 rounded-md border border-red-300 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50"
+          >
+            Excluir minha conta
+          </button>
+        </section>
+      </main>
+      <Footer />
+    </div>
   );
 }

@@ -66,9 +66,10 @@ model Agendamento {
   pacienteId     String            @map("paciente_id")
   medicoId       String            @map("medico_id")
   periodoInicio  DateTime          @map("periodo_inicio")
-  periodoFim     DateTime          @map("periodo_fim")
-  status         StatusAgendamento @default(AGENDADO)
-  criadoEm       DateTime          @default(now()) @map("criado_em")
+  periodoFim      DateTime          @map("periodo_fim")
+  status          StatusAgendamento @default(AGENDADO)
+  lembreteEnviado Boolean           @default(false) @map("lembrete_enviado")
+  criadoEm        DateTime          @default(now()) @map("criado_em")
 
   paciente Paciente @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
   medico   Medico   @relation(fields: [medicoId], references: [id], onDelete: Cascade)

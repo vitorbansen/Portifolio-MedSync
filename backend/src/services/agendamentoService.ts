@@ -3,8 +3,14 @@ import { prisma } from '../lib/prisma';
 import {
   CreateAgendamentoInput,
   ListAgendamentosQuery,
+  ReagendarInput,
   UpdateStatusInput,
 } from '../schemas/agendamentoSchemas';
+import {
+  notificarCancelamento,
+  notificarConfirmacao,
+  notificarReagendamento,
+} from './notificacaoService';
 
 export class AgendamentoError extends Error {
   constructor(public status: number, message: string) {
@@ -133,7 +139,7 @@ export async function createAgendamento(input: CreateAgendamentoInput, solicitan
     throw new AgendamentoError(409, 'Médico já possui agendamento neste horário');
   }
 
-  return prisma.agendamento.create({
+  const criado = await prisma.agendamento.create({
     data: {
       medicoId,
       pacienteId,
@@ -142,6 +148,12 @@ export async function createAgendamento(input: CreateAgendamentoInput, solicitan
     },
     select: agendamentoSelect,
   });
+
+  notificarConfirmacao(criado).catch((err: Error) =>
+    console.error('[notificacao] Erro ao enviar confirmacao WhatsApp:', err.message),
+  );
+
+  return criado;
 }
 
 export async function listAgendamentos(query: ListAgendamentosQuery, solicitante: Solicitante) {
@@ -212,9 +224,89 @@ export async function updateAgendamentoStatus(
     );
   }
 
-  return prisma.agendamento.update({
+  const atualizado = await prisma.agendamento.update({
     where: { id },
     data: { status: input.status },
     select: agendamentoSelect,
   });
+
+  if (input.status === StatusAgendamento.CANCELADO) {
+    notificarCancelamento(atualizado).catch((err: Error) =>
+      console.error('[notificacao] Erro ao enviar cancelamento WhatsApp:', err.message),
+    );
+  }
+
+  return atualizado;
+}
+
+const VINTE_QUATRO_HORAS_MS = 24 * 60 * 60 * 1000;
+
+export async function reagendarAgendamento(
+  id: string,
+  input: ReagendarInput,
+  solicitante: Solicitante,
+) {
+  const agendamento = await prisma.agendamento.findUnique({
+    where: { id },
+    include: {
+      medico: { include: { usuario: { select: { nome: true } } } },
+      paciente: { select: { nome: true, telefone: true } },
+    },
+  });
+  if (!agendamento) throw new AgendamentoError(404, 'Agendamento não encontrado');
+
+  if (
+    agendamento.status === StatusAgendamento.CANCELADO ||
+    agendamento.status === StatusAgendamento.REALIZADO
+  ) {
+    throw new AgendamentoError(409, 'Não é possível reagendar um agendamento finalizado');
+  }
+
+  // RN: reagendamento só permitido com mais de 24h de antecedência
+  if (agendamento.periodoInicio.getTime() - Date.now() < VINTE_QUATRO_HORAS_MS) {
+    throw new AgendamentoError(
+      409,
+      'Reagendamento só é permitido com mais de 24 horas de antecedência',
+    );
+  }
+
+  if (solicitante.role === Role.PACIENTE) {
+    const pacienteId = await getPacienteIdDoUsuario(solicitante.sub);
+    if (pacienteId !== agendamento.pacienteId) throw new AgendamentoError(403, 'Acesso negado');
+  } else if (solicitante.role === Role.MEDICO) {
+    const medicoId = await getMedicoIdDoUsuario(solicitante.sub);
+    if (medicoId !== agendamento.medicoId) throw new AgendamentoError(403, 'Acesso negado');
+  }
+
+  if (input.periodoInicio <= new Date()) {
+    throw new AgendamentoError(400, 'Novo horário deve ser no futuro');
+  }
+
+  // RN01: verificar conflito no novo horário (excluindo o próprio agendamento)
+  const conflito = await prisma.agendamento.findFirst({
+    where: {
+      id: { not: id },
+      medicoId: agendamento.medicoId,
+      status: { in: [StatusAgendamento.AGENDADO, StatusAgendamento.CONFIRMADO] },
+      periodoInicio: { lt: input.periodoFim },
+      periodoFim: { gt: input.periodoInicio },
+    },
+  });
+  if (conflito) throw new AgendamentoError(409, 'Médico já possui agendamento neste horário');
+
+  const atualizado = await prisma.agendamento.update({
+    where: { id },
+    data: {
+      periodoInicio: input.periodoInicio,
+      periodoFim: input.periodoFim,
+      lembreteEnviado: false,
+    },
+    select: agendamentoSelect,
+  });
+
+  notificarReagendamento(atualizado).catch((err: Error) =>
+    console.error('[notificacao] Erro ao enviar reagendamento WhatsApp:', err.message),
+  );
+
+  return atualizado;
 }

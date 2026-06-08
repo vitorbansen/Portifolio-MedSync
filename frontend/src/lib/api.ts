@@ -218,6 +218,20 @@ export async function cancelarAgendamento(token: string, id: string): Promise<Ag
   return handleResponse<Agendamento>(res);
 }
 
+export async function reagendarAgendamento(
+  token: string,
+  id: string,
+  periodoInicio: string,
+  periodoFim: string,
+): Promise<Agendamento> {
+  const res = await fetch(`${API_URL}/agendamentos/${id}/reagendar`, {
+    method: 'PATCH',
+    headers: authHeaders(token),
+    body: JSON.stringify({ periodoInicio, periodoFim }),
+  });
+  return handleResponse<Agendamento>(res);
+}
+
 export interface UpdateMeInput {
   nome?: string;
   email?: string;

@@ -10,9 +10,12 @@ import {
   listAgendamentos,
   Usuario,
   cancelarAgendamento,
+  reagendarAgendamento,
 } from '@/lib/api';
 import { clearToken, getToken } from '@/lib/auth';
 import { formatIntervalo } from '@/lib/format';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 const STATUS_COR: Record<Agendamento['status'], string> = {
   AGENDADO: 'bg-blue-100 text-blue-800',
@@ -54,6 +57,8 @@ export default function DashboardPage() {
   const [agendamentos, setAgendamentos] = useState<Agendamento[] | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [cancelandoId, setCancelandoId] = useState<string | null>(null);
+  const [historicoVisiveis, setHistoricoVisiveis] = useState(3);
+  const [reagendandoId, setReagendandoId] = useState<string | null>(null);
 
   const carregar = useCallback(async () => {
     const token = getToken();
@@ -92,12 +97,33 @@ export default function DashboardPage() {
     }
   }
 
+  async function reagendar(id: string, periodoInicio: string, periodoFim: string) {
+    const token = getToken();
+    if (!token) return;
+    try {
+      const atualizado = await reagendarAgendamento(token, id, periodoInicio, periodoFim);
+      setAgendamentos((atual) =>
+        atual?.map((a) => (a.id === id ? atualizado : a)) ?? atual,
+      );
+      setReagendandoId(null);
+    } catch (err) {
+      throw err;
+    }
+  }
+
   function sair() {
     clearToken();
     router.push('/login');
   }
 
-  if (erro) return <div className="p-6 text-red-700">{erro}</div>;
+  if (erro)
+    return (
+      <div className="flex min-h-screen flex-col bg-slate-50">
+        <Header />
+        <main className="flex-1 p-6 text-red-700">{erro}</main>
+        <Footer />
+      </div>
+    );
   if (!usuario || !agendamentos) return <SkeletonDashboard />;
 
   const isMedico = usuario.role === 'MEDICO';
@@ -110,27 +136,13 @@ export default function DashboardPage() {
   );
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-10">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
+    <div className="flex min-h-screen flex-col bg-slate-50">
+      <Header />
+      <main className="mx-auto w-full max-w-4xl flex-1 px-6 py-10">
+        <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900">Olá, {usuario.nome}</h1>
-          <p className="text-slate-500">Perfil: {usuario.role}</p>
+          <p className="mt-1 text-slate-500">Bem-vindo de volta à sua área.</p>
         </div>
-        <div className="flex items-center gap-2">
-          <Link
-            href="/perfil"
-            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
-          >
-            Perfil
-          </Link>
-          <button
-            onClick={sair}
-            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
-          >
-            Sair
-          </button>
-        </div>
-      </div>
 
       {isMedico ? (
         <FormAgendamentoMedico
@@ -158,7 +170,33 @@ export default function DashboardPage() {
       )}
 
       {isMedico ? (
-        <TimelineMedico agendamentos={agendamentos} />
+        <>
+          <TimelineMedico agendamentos={agendamentos} />
+          <section className="mb-10">
+            <h2 className="mb-3 text-lg font-semibold text-slate-800">Próximas consultas</h2>
+            {ativos.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center">
+                <p className="text-slate-800">Nenhuma consulta ativa</p>
+                <p className="mt-1 text-sm text-slate-500">
+                  Registre novos agendamentos pelo formulário acima.
+                </p>
+              </div>
+            ) : (
+              <ul className="space-y-3">
+                {ativos.map((a) => (
+                  <AgendamentoItem
+                    key={a.id}
+                    agendamento={a}
+                    isMedico={true}
+                    cancelando={cancelandoId === a.id}
+                    onCancelar={() => cancelar(a.id)}
+                    onReagendar={() => setReagendandoId(a.id)}
+                  />
+                ))}
+              </ul>
+            )}
+          </section>
+        </>
       ) : (
         <section className="mb-10">
           <h2 className="mb-3 text-lg font-semibold text-slate-800">
@@ -179,6 +217,7 @@ export default function DashboardPage() {
                   isMedico={isMedico}
                   cancelando={cancelandoId === a.id}
                   onCancelar={() => cancelar(a.id)}
+                  onReagendar={() => setReagendandoId(a.id)}
                 />
               ))}
             </ul>
@@ -190,14 +229,31 @@ export default function DashboardPage() {
         <section>
           <h2 className="mb-3 text-lg font-semibold text-slate-800">Histórico</h2>
           <ul className="space-y-3">
-            {passados.map((a) => (
+            {passados.slice(0, historicoVisiveis).map((a) => (
               <AgendamentoItem key={a.id} agendamento={a} isMedico={isMedico} />
             ))}
           </ul>
+          {passados.length > historicoVisiveis && (
+            <button
+              onClick={() => setHistoricoVisiveis((v) => v + 10)}
+              className="mt-4 rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+            >
+              Carregar mais ({passados.length - historicoVisiveis} restantes)
+            </button>
+          )}
         </section>
       )}
+      </main>
+      <Footer />
 
-    </main>
+      {reagendandoId && (
+        <ModalReagendar
+          agendamento={agendamentos!.find((a) => a.id === reagendandoId)!}
+          onConfirmar={(inicio, fim) => reagendar(reagendandoId, inicio, fim)}
+          onFechar={() => setReagendandoId(null)}
+        />
+      )}
+    </div>
   );
 }
 
@@ -351,14 +407,21 @@ function AgendamentoItem({
   isMedico,
   onCancelar,
   cancelando,
+  onReagendar,
 }: {
   agendamento: Agendamento;
   isMedico: boolean;
   onCancelar?: () => void;
   cancelando?: boolean;
+  onReagendar?: () => void;
 }) {
-  const podeCancelar =
-    onCancelar && (agendamento.status === 'AGENDADO' || agendamento.status === 'CONFIRMADO');
+  const ativo =
+    agendamento.status === 'AGENDADO' || agendamento.status === 'CONFIRMADO';
+  const podeCancelar = onCancelar && ativo;
+  const podeReagendar =
+    onReagendar &&
+    ativo &&
+    new Date(agendamento.periodoInicio).getTime() - Date.now() > 24 * 60 * 60 * 1000;
 
   const titulo = isMedico
     ? agendamento.paciente.nome
@@ -383,6 +446,14 @@ function AgendamentoItem({
           >
             {agendamento.status}
           </span>
+          {podeReagendar && (
+            <button
+              onClick={onReagendar}
+              className="rounded-md border border-amber-300 px-3 py-1 text-xs font-medium text-amber-700 hover:bg-amber-50"
+            >
+              Reagendar
+            </button>
+          )}
           {podeCancelar && (
             <button
               onClick={onCancelar}
@@ -527,15 +598,117 @@ function TimelineMedico({ agendamentos }: { agendamentos: Agendamento[] }) {
   );
 }
 
+function ModalReagendar({
+  agendamento,
+  onConfirmar,
+  onFechar,
+}: {
+  agendamento: Agendamento;
+  onConfirmar: (periodoInicio: string, periodoFim: string) => Promise<void>;
+  onFechar: () => void;
+}) {
+  const duracaoMs =
+    new Date(agendamento.periodoFim).getTime() -
+    new Date(agendamento.periodoInicio).getTime();
+
+  const [data, setData] = useState('');
+  const [horaInicio, setHoraInicio] = useState('');
+  const [erro, setErro] = useState<string | null>(null);
+  const [salvando, setSalvando] = useState(false);
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setErro(null);
+    const inicio = new Date(`${data}T${horaInicio}:00`);
+    if (Number.isNaN(inicio.getTime())) {
+      setErro('Data ou hora inválida');
+      return;
+    }
+    const fim = new Date(inicio.getTime() + duracaoMs);
+    setSalvando(true);
+    try {
+      await onConfirmar(inicio.toISOString(), fim.toISOString());
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : 'Erro ao reagendar');
+      setSalvando(false);
+    }
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4"
+      onClick={(e) => e.target === e.currentTarget && onFechar()}
+    >
+      <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+        <h2 className="mb-1 text-lg font-bold text-slate-900">Reagendar consulta</h2>
+        <p className="mb-5 text-sm text-slate-500">
+          A duração será mantida ({Math.round(duracaoMs / 60000)} min). Escolha uma nova data e
+          hora.
+        </p>
+
+        <form onSubmit={onSubmit} className="space-y-4">
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700">Nova data</label>
+            <input
+              type="date"
+              required
+              value={data}
+              onChange={(e) => setData(e.target.value)}
+              className="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-brand focus:outline-none"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700">
+              Novo horário de início
+            </label>
+            <input
+              type="time"
+              required
+              value={horaInicio}
+              onChange={(e) => setHoraInicio(e.target.value)}
+              className="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-brand focus:outline-none"
+            />
+          </div>
+
+          {erro && (
+            <div className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{erro}</div>
+          )}
+
+          <div className="flex gap-3 pt-1">
+            <button
+              type="button"
+              onClick={onFechar}
+              className="flex-1 rounded-lg border border-slate-300 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={salvando}
+              className="flex-1 rounded-lg bg-amber-500 py-2 text-sm font-semibold text-white hover:bg-amber-600 disabled:opacity-60"
+            >
+              {salvando ? 'Salvando…' : 'Confirmar'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 function SkeletonDashboard() {
   return (
-    <main className="mx-auto max-w-4xl px-6 py-10">
-      <div className="mb-8 h-10 w-64 animate-pulse rounded bg-slate-200" />
-      <div className="space-y-3">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="h-24 animate-pulse rounded-xl bg-slate-100" />
-        ))}
-      </div>
-    </main>
+    <div className="flex min-h-screen flex-col bg-slate-50">
+      <Header />
+      <main className="mx-auto w-full max-w-4xl flex-1 px-6 py-10">
+        <div className="mb-8 h-10 w-64 animate-pulse rounded bg-slate-200" />
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-24 animate-pulse rounded-xl bg-slate-100" />
+          ))}
+        </div>
+      </main>
+      <Footer />
+    </div>
   );
 }

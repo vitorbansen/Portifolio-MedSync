@@ -30,6 +30,17 @@ export const agendamentoIdParamSchema = z.object({
   id: z.string().uuid('ID inválido'),
 });
 
+export const reagendarSchema = z
+  .object({
+    periodoInicio: z.coerce.date(),
+    periodoFim: z.coerce.date(),
+  })
+  .refine((d) => d.periodoFim > d.periodoInicio, {
+    message: 'periodoFim deve ser maior que periodoInicio',
+    path: ['periodoFim'],
+  });
+
 export type CreateAgendamentoInput = z.infer<typeof createAgendamentoSchema>;
 export type ListAgendamentosQuery = z.infer<typeof listAgendamentosSchema>;
 export type UpdateStatusInput = z.infer<typeof updateStatusSchema>;
+export type ReagendarInput = z.infer<typeof reagendarSchema>;
