@@ -1,0 +1,10 @@
+# Copie para terraform.tfvars (nao versionado) e ajuste os valores.
+
+# Descubra seu IP publico em https://www.whatismyip.com/ e use "SEU_IP/32".
+# Use 0.0.0.0/0 se quiser que o workflow de deploy do GitHub Actions
+# consiga conectar via SSH (os runners do GitHub tem IP dinamico).
+allowed_ssh_cidr = "0.0.0.0/0"
+
+aws_region    = "sa-east-1"
+project_name  = "medsync"
+instance_type = "t3.micro"
