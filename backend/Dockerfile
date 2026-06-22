@@ -4,6 +4,11 @@ WORKDIR /app
 
 RUN apk add --no-cache openssl
 
+# "prisma generate" so le o schema (nao conecta no banco), mas o prisma.config.ts
+# exige DATABASE_URL resolvivel. O .env real (com a URL de verdade) fica de fora
+# da imagem via .dockerignore; este placeholder so existe para o build passar.
+ENV DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder?schema=public"
+
 COPY package*.json ./
 COPY prisma ./prisma
 
