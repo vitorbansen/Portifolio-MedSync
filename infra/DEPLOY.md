@@ -61,6 +61,16 @@ Para forçar manualmente: `git commit --allow-empty -m "deploy" && git push`, ou
 
 Acesse `http://<EC2_HOST>` no navegador. Para depurar: `ssh -i medsync-deploy.pem ubuntu@<EC2_HOST>` e `docker compose -f docker-compose.prod.yml logs -f`.
 
+## Observabilidade
+
+Prometheus disponível em `http://<EC2_HOST>:9090` (sem autenticação — qualquer pessoa com o IP consegue acessar; só métricas de sistema/HTTP, nada de dados de paciente).
+
+- Backend expõe `/metrics` (formato Prometheus) com métricas padrão de processo Node.js + duração das requisições HTTP.
+- `node-exporter` expõe métricas do host (CPU, memória, disco) da instância EC2.
+- Configuração de scrape em `infra/prometheus/prometheus.yml`.
+
+Não tem Grafana (decisão consciente: a instância é `t3.micro` com só 1GB de RAM, e Grafana + Prometheus juntos deixariam a memória muito apertada). Pra visualizar, use a própria UI do Prometheus em `/graph`.
+
 ## 6. Custos
 
 Tudo dentro do AWS Free Tier (750h/mês de `t3.micro`, 30GB de EBS) por 12 meses a partir da criação da conta. Configure um **Budget alert** em **AWS Billing → Budgets** para ser avisado se algo sair do esperado.
