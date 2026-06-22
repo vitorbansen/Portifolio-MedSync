@@ -2,6 +2,7 @@
   "name": "medsync-backend",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "description": "MedSync backend API - autenticação, médicos e agendamentos",
   "main": "dist/server.js",
   "scripts": {
