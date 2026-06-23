@@ -1,24 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1782157491446" clover="3.2.0">
-  <project timestamp="1782157491447" name="All files">
-    <metrics statements="743" coveredstatements="207" conditionals="339" coveredconditionals="59" methods="178" coveredmethods="47" elements="1260" coveredelements="313" complexity="0" loc="743" ncloc="743" packages="13" files="17" classes="17"/>
+<coverage generated="1782249609619" clover="3.2.0">
+  <project timestamp="1782249609619" name="All files">
+    <metrics statements="748" coveredstatements="225" conditionals="343" coveredconditionals="67" methods="179" coveredmethods="50" elements="1270" coveredelements="342" complexity="0" loc="748" ncloc="748" packages="13" files="17" classes="17"/>
     <package name="src">
-      <metrics statements="13" coveredstatements="0" conditionals="4" coveredconditionals="0" methods="2" coveredmethods="0"/>
+      <metrics statements="18" coveredstatements="18" conditionals="8" coveredconditionals="8" methods="3" coveredmethods="3"/>
       <file name="middleware.ts" path="C:\Users\VitorBansen-MailouCl\Documents\Desenvolvimentos\Pessoal\TCC\frontend\src\middleware.ts">
-        <metrics statements="13" coveredstatements="0" conditionals="4" coveredconditionals="0" methods="2" coveredmethods="0"/>
-        <line num="1" count="0" type="stmt"/>
-        <line num="3" count="0" type="stmt"/>
-        <line num="5" count="0" type="stmt"/>
-        <line num="6" count="0" type="stmt"/>
-        <line num="7" count="0" type="stmt"/>
-        <line num="8" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="10" count="0" type="stmt"/>
-        <line num="11" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="12" count="0" type="stmt"/>
-        <line num="13" count="0" type="stmt"/>
-        <line num="14" count="0" type="stmt"/>
-        <line num="17" count="0" type="stmt"/>
-        <line num="20" count="0" type="stmt"/>
+        <metrics statements="18" coveredstatements="18" conditionals="8" coveredconditionals="8" methods="3" coveredmethods="3"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="5" type="stmt"/>
+        <line num="7" count="5" type="stmt"/>
+        <line num="8" count="5" type="stmt"/>
+        <line num="10" count="5" type="stmt"/>
+        <line num="11" count="5" type="cond" truecount="4" falsecount="0"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="13" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="17" count="6" type="stmt"/>
+        <line num="18" count="4" type="cond" truecount="4" falsecount="0"/>
+        <line num="19" count="2" type="stmt"/>
+        <line num="20" count="2" type="stmt"/>
+        <line num="21" count="2" type="stmt"/>
+        <line num="24" count="2" type="stmt"/>
+        <line num="27" count="1" type="stmt"/>
       </file>
     </package>
     <package name="src.app">

@@ -2,8 +2,6 @@
 
 **Engenharia de Software – Católica SC**
 
-> **Para avaliação do projeto, veja [ENTREGA.md](./ENTREGA.md)** — documento único com todos os links, acessos e evidências exigidos pelo checklist de entrega.
-
 ---
 
 # Identificação
@@ -12,7 +10,8 @@
 - **Linha de Projeto (Direction):** Web / Plataforma / DevOps
 - **Autor:** Vitor Bansen Delfino
 - **Data da Proposta:** 10/03/2026
-- **Versão:** 1.0
+- **Versão:** 3.0
+
 
 ---
 
