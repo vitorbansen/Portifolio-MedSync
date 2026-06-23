@@ -26,7 +26,7 @@ function formatHora(date: Date): string {
 export async function notificarConfirmacao(ag: AgendamentoParaNotificacao): Promise<void> {
   const inicio = new Date(ag.periodoInicio);
   const mensagem =
-    `Ola, ${ag.paciente.nome}! Sua consulta com Dr(a). ${ag.medico.usuario.nome}` +
+    `Ola, ${ag.paciente.nome}! Sua consulta com ${ag.medico.usuario.nome}` +
     ` (${ag.medico.especialidade}) esta confirmada para ${formatData(inicio)} as ${formatHora(inicio)}.` +
     ` Em caso de duvidas, entre em contato. — MedSync`;
   await enviarWhatsApp(ag.paciente.telefone, mensagem);
@@ -35,7 +35,7 @@ export async function notificarConfirmacao(ag: AgendamentoParaNotificacao): Prom
 export async function notificarLembrete(ag: AgendamentoParaNotificacao): Promise<void> {
   const inicio = new Date(ag.periodoInicio);
   const mensagem =
-    `Ola, ${ag.paciente.nome}! Lembrete: voce tem consulta com Dr(a). ${ag.medico.usuario.nome}` +
+    `Ola, ${ag.paciente.nome}! Lembrete: voce tem consulta com ${ag.medico.usuario.nome}` +
     ` (${ag.medico.especialidade}) amanha as ${formatHora(inicio)}. Nao se esqueca! — MedSync`;
   await enviarWhatsApp(ag.paciente.telefone, mensagem);
 }
@@ -43,7 +43,7 @@ export async function notificarLembrete(ag: AgendamentoParaNotificacao): Promise
 export async function notificarReagendamento(ag: AgendamentoParaNotificacao): Promise<void> {
   const inicio = new Date(ag.periodoInicio);
   const mensagem =
-    `Ola, ${ag.paciente.nome}! Seu agendamento com Dr(a). ${ag.medico.usuario.nome}` +
+    `Ola, ${ag.paciente.nome}! Seu agendamento com ${ag.medico.usuario.nome}` +
     ` foi remarcado para ${formatData(inicio)} as ${formatHora(inicio)}. — MedSync`;
   await enviarWhatsApp(ag.paciente.telefone, mensagem);
 }
@@ -51,7 +51,7 @@ export async function notificarReagendamento(ag: AgendamentoParaNotificacao): Pr
 export async function notificarCancelamento(ag: AgendamentoParaNotificacao): Promise<void> {
   const inicio = new Date(ag.periodoInicio);
   const mensagem =
-    `Ola, ${ag.paciente.nome}! Sua consulta com Dr(a). ${ag.medico.usuario.nome}` +
+    `Ola, ${ag.paciente.nome}! Sua consulta com ${ag.medico.usuario.nome}` +
     ` (${ag.medico.especialidade}) prevista para ${formatData(inicio)} as ${formatHora(inicio)}` +
     ` foi cancelada. — MedSync`;
   await enviarWhatsApp(ag.paciente.telefone, mensagem);

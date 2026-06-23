@@ -2,6 +2,8 @@
 
 **Engenharia de Software – Católica SC**
 
+> **Para avaliação do projeto, veja [ENTREGA.md](./ENTREGA.md)** — documento único com todos os links, acessos e evidências exigidos pelo checklist de entrega.
+
 ---
 
 # Identificação
@@ -11,6 +13,21 @@
 - **Autor:** Vitor Bansen Delfino
 - **Data da Proposta:** 10/03/2026
 - **Versão:** 1.0
+
+---
+
+# Acesso à Aplicação e Credenciais de Teste
+
+- **Aplicação em produção:** http://www.medsyncs.com.br
+- **Repositório:** https://github.com/vitorbansen/Portifolio-MedSync
+
+Contas de teste já cadastradas em produção (senha padrão igual para todas):
+
+| Perfil | E-mail | Senha |
+|---|---|---|
+| Administrador | `admin@medsync.local` | `senha123` |
+| Médico | `livia.andrade@medsync.local` | `senha123` |
+| Paciente | `joao.silva@exemplo.com` | `senha123` |
 
 ---
 

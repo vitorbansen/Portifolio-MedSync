@@ -26,13 +26,13 @@ async function main() {
 
   const medicos = [
     {
-      nome: 'Dra. Lívia Andrade',
+      nome: 'Dr(a). Lívia Andrade',
       email: 'livia.andrade@medsync.local',
       crm: 'CRM-SC 12345',
       especialidade: 'Biomedicina',
     },
     {
-      nome: 'Rebeca Biondi',
+      nome: 'Dr(a). Rebeca Biondi',
       email: 'rebeca.biondi@medsync.local',
       crm: 'CRM-SC 23456',
       especialidade: 'Biomedicina Estética',
