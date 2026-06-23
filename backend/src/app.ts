@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import { env } from './lib/env';
+import { env, corsOrigins } from './lib/env';
 import { router } from './routes';
 import { errorHandler } from './middlewares/errorHandler';
 import { registry, httpRequestDuration } from './lib/metrics';
@@ -21,7 +21,7 @@ app.use(
         scriptSrc: ["'self'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", 'data:'],
-        connectSrc: ["'self'", env.CORS_ORIGIN],
+        connectSrc: ["'self'", ...corsOrigins],
         objectSrc: ["'none'"],
         frameAncestors: ["'none'"],
       },
@@ -31,7 +31,18 @@ app.use(
     hsts: isProd ? { maxAge: 31536000, includeSubDomains: true, preload: false } : false,
   }),
 );
-app.use(cors({ origin: env.CORS_ORIGIN, credentials: true }));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || corsOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Origem não permitida pelo CORS'));
+      }
+    },
+    credentials: true,
+  }),
+);
 app.use(express.json({ limit: '100kb' }));
 app.use(morgan(env.NODE_ENV === 'development' ? 'dev' : 'combined'));
 

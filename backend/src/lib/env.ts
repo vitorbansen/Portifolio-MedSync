@@ -27,3 +27,10 @@ if (!parsed.success) {
 }
 
 export const env = parsed.data;
+
+// CORS_ORIGIN aceita uma ou mais origens separadas por virgula
+// (ex.: "http://www.medsyncs.com.br,http://medsyncs.com.br,http://54.94.40.80"),
+// necessario durante a migracao do IP cru para o dominio proprio.
+export const corsOrigins = env.CORS_ORIGIN.split(',')
+  .map((origin) => origin.trim())
+  .filter((origin) => origin.length > 0);
