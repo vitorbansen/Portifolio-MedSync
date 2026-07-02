@@ -260,6 +260,7 @@ flowchart TB
 - **RF04 — Validação de conflito de horário:** o sistema deve impedir conflitos de horário, validando automaticamente a disponibilidade antes de confirmar qualquer agendamento.
 - **RF05 — Visualização de agenda:** o profissional deve poder visualizar sua agenda de forma organizada e intuitiva, com filtro por data.
 - **RF06 — Gestão restrita de profissionais:** apenas administradores podem cadastrar, editar e excluir biomédicos do sistema, mantendo o controle sobre o corpo clínico.
+- **RF07 — Notificação automática via WhatsApp:** o sistema deve notificar o paciente via WhatsApp (integração Z-API) nos seguintes eventos do agendamento: confirmação na criação, lembrete na véspera (job automático, 23h–25h antes do horário), reagendamento e cancelamento.
 
 ---
 
@@ -287,7 +288,7 @@ flowchart TB
 
 ## 2.6 Fora do Escopo
 
-Para manter o foco e evitar o crescimento descontrolado do projeto, algumas funcionalidades foram deliberadamente excluídas do escopo atual do MedSync. O sistema não contempla prontuário médico eletrônico, uma vez que esse módulo exigiria requisitos regulatórios específicos e um nível de complexidade que extrapolaria os objetivos do projeto. Da mesma forma, não está prevista integração com convênios médicos, pois cada convênio possui regras e APIs próprias que demandariam desenvolvimento dedicado. Por fim, o envio de notificações via SMS ou WhatsApp também está fora do escopo inicial, embora possa ser incorporado em versões futuras como uma evolução natural da plataforma.
+Para manter o foco e evitar o crescimento descontrolado do projeto, algumas funcionalidades foram deliberadamente excluídas do escopo atual do MedSync. O sistema não contempla prontuário médico eletrônico, uma vez que esse módulo exigiria requisitos regulatórios específicos e um nível de complexidade que extrapolaria os objetivos do projeto. Da mesma forma, não está prevista integração com convênios médicos, pois cada convênio possui regras e APIs próprias que demandariam desenvolvimento dedicado. Por fim, o envio de notificações via SMS também está fora do escopo inicial, embora possa ser incorporado em versões futuras como uma evolução natural da plataforma.
 
 ---
 
@@ -602,6 +603,8 @@ A escolha de cada tecnologia do MedSync foi orientada por critérios de performa
 **Docker** foi adotado para containerização de toda a aplicação, garantindo que o ambiente de desenvolvimento seja idêntico ao de produção. Essa consistência elimina o clássico problema de "funciona na minha máquina" e simplifica enormemente o processo de deploy. Com Docker Compose, toda a stack (backend, banco de dados, Redis) pode ser inicializada com um único comando, facilitando a configuração do ambiente tanto para novos desenvolvedores quanto para deploys em produção. O benefício é a redução drástica do tempo de setup e a eliminação de inconsistências entre ambientes.
 
 **GitHub Actions** foi escolhido como ferramenta de CI/CD por estar integrado nativamente ao repositório do projeto no GitHub. Com ele, é possível automatizar a execução de testes a cada push, realizar builds automáticos e, futuramente, automatizar deploys em ambientes de staging e produção. Essa automação garante que o código entregue está sempre validado e funcional, contribuindo diretamente para a meta de cobertura de testes de 75% e para a confiabilidade geral do sistema. O benefício é a confiança de que cada alteração no código passa por um pipeline de qualidade antes de chegar ao usuário final.
+
+**Z-API** foi escolhido para a integração com WhatsApp (RF07) por expor uma API REST simples sobre o WhatsApp Business, sem exigir homologação como a API oficial da Meta. O backend usa esse serviço para notificar o paciente automaticamente em quatro momentos do ciclo de vida do agendamento: confirmação, lembrete na véspera, reagendamento e cancelamento. O benefício é reduzir o absenteísmo (RN identificada na pesquisa de campo, seção 1.2) sem depender de confirmação manual por telefone.
 
 ---
 
